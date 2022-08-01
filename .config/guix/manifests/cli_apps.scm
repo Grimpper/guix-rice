@@ -15,6 +15,7 @@
 
    ;; Needed apps for the desktop environment
    "git"
+   "openssh"
    "ripgrep"
    "flameshot"
    "neofetch"

@@ -1,0 +1,49 @@
+#!/bin/sh
+# NOTE: This file is generated from ~/.dotfiles/System.org.  Please see commentary there.
+
+############################################################
+# Help                                                     #
+############################################################
+Help()
+{
+   # Display Help
+   echo "This function is used to install and/or enable guix profiles."
+   echo
+   echo "Syntax: scriptTemplate [-g|h|v|V]"
+   echo "options:"
+   echo "g     Print the GPL license notification."
+   echo "h     Print this Help."
+   echo "v     Verbose mode."
+   echo "V     Print software version and exit."
+   echo
+}
+
+############################################################
+############################################################
+# Main program                                             #
+############################################################
+############################################################
+. $HOME/.bin/utility_functions/functions.sh
+
+while getopts ":hp" option; do
+  case $option in
+    h) # display Help
+      Help
+      exit;;
+    \?) # Invalid option
+      echo -e "${RED}Error:${NC} Invalid option"
+      exit;;
+  esac
+done
+
+checkEnv
+if [[ $? -gt 0 ]]; then
+  exit;
+fi
+
+profiles=$* # Get all profile arguments
+if [[ $# -eq 0 ]]; then # If no arguments use activate all profiles
+  profiles=$(dir $GUIX_MANIFESTS | sed 's|\([^ ]\+\)\.scm|\1|g')
+fi
+
+installProfiles $profiles

@@ -1,13 +1,12 @@
-;; This is an operating system configuration generated
-;; by the graphical installer.
+(define-module (base-system)
+  #:use-module (gnu)
+  #:use-module (gnu services)
+  #:use-module (gnu services sddm)
+  #:use-module (gnu packages xorg)
+  #:use-module (nongnu packages linux)
+  #:use-module (nongnu packages nvidia)
+  #:use-module (guix transformations))
 
-(use-modules (gnu)
-             (gnu services)
-             (gnu services sddm)
-             (gnu packages xorg)
-             (nongnu packages linux)
-             (nongnu packages nvidia)
-             (guix transformations))
 (use-service-modules
   cups
   desktop
@@ -22,7 +21,8 @@
   (options->transformation
    '((with-graft . "mesa=nvda"))))
 
-(operating-system
+(define-public base-operating-system
+ (operating-system
   (kernel linux-lts)
   (kernel-arguments (append
                      '("modprobe.blacklist=nouveau")
@@ -32,12 +32,12 @@
   (locale "en_US.utf8")
   (timezone "Europe/Madrid")
   (keyboard-layout (keyboard-layout "us" "intl"))
-  (host-name "grim")
+  (host-name "dummypc")
   (users (cons* (user-account
-                  (name "grim")
-                  (comment "Grimpper")
+                  (name "dummy")
+                  (comment "Dummy")
                   (group "users")
-                  (home-directory "/home/grim")
+                  (home-directory "/home/dummy")
                   (supplementary-groups
                     '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
@@ -47,12 +47,9 @@
             (specification->package "alacritty")
             (specification->package "emacs")
             (specification->package "emacs-vterm")
-            (specification->package "emacs-exwm")
-            (specification->package
-              "emacs-desktop-environment")
             (specification->package "nss-certs"))
       %base-packages))
-  (services 
+  (services
     (cons* (pam-limits-service
             (list
              (pam-limits-entry "*" 'hard 'nofile 524288)))
@@ -76,35 +73,18 @@
                                    (drivers '("nvidia"))))))
            (service gnome-desktop-service-type)
            (modify-services %desktop-services
-                            (delete gdm-service-type)
-                            ;; (guix-service-type config =>
-                            ;;                    (guix-configuration
-                            ;;                     (inherit config)
-                            ;;                     (substitute-urls (append (list "https://substitutes.guix.psychnotebook.org")
-                            ;;                                              %default-substitute-urls))
-                            ;;                     (authorized-keys (append (list (local-file "substitutes/psychnotebook.pub"))
-                            ;;                                       %default-authorized-guix-keys))))
-                            )))
+                            (delete gdm-service-type))))
   (bootloader
     (bootloader-configuration
       (bootloader grub-efi-bootloader)
       (targets (list "/boot/efi"))
       (keyboard-layout keyboard-layout)))
-  (file-systems
-    (cons* (file-system
-             (mount-point "/home")
-             (device
-               (uuid "9674545f-78dc-44c9-bd63-0da85ed699df"
-                     'ext4))
-             (type "ext4"))
-           (file-system
-             (mount-point "/")
-             (device
-               (uuid "2c12513d-e7ee-4fe8-80d2-e7399f8e437c"
-                     'ext4))
-             (type "ext4"))
-           (file-system
-             (mount-point "/boot/efi")
-             (device (uuid "ED98-F9EC" 'fat32))
-             (type "vfat"))
-           %base-file-systems)))
+  ;; Guix doesn't like it when there isn't a file-systems
+  ;; entry, so add one that is meant to be overridden
+  (file-systems (cons*
+                 (file-system
+                  (mount-point "/tmp")
+                  (device "none")
+                  (type "tmpfs")
+                  (check? #f))
+                 %base-file-systems))))

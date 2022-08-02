@@ -68,7 +68,7 @@
             (sddm-configuration
               (display-server "wayland")
               (remember-last-user? #t)
-              (themes-directory "/home/grim/sddm")
+              (themes-directory "/opt/sddm")
               (theme "sugar-candy")
               (xorg-configuration (xorg-configuration
                                    (modules (cons* nvidia-driver %default-xorg-modules))

@@ -2,9 +2,8 @@
  '(
    ;; Window Manager dependencies
    "xrandr"
-   "xset"
    "xrdb"
-   "xsettingsd"
+   "xprop"
    "setxkbmap"
    "sxhkd"
    "xsetroot"
@@ -16,6 +15,7 @@
    "pavucontrol"
    "feh"
    "fontconfig"
+   "adwaita-icon-theme"
 
    ;; Needed apps for the desktop environment
    "git"

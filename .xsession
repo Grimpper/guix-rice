@@ -13,6 +13,8 @@ GUIX_PROFILE="$HOME/.guix-profile"
 # Load installed profiles
 . $HOME/.bin/pollute.sh
 
+XCURSOR_PATH=$XCURSOR_PATH:$GUIX_EXTRA_PROFILES/desktop/desktop/share/icons
+
 # Ensure that font folders are loaded correctly
 xset +fp $(dirname $(readlink -f $GUIX_EXTRA_PROFILES/fonts/fonts/share/fonts/truetype/fonts.dir))
 
@@ -28,16 +30,16 @@ if [ -z "$(pgrep -u grim shepherd)" ]; then
 fi
 
 # Run xsettingsd to propagate font and theme settings
-xsettingsd &
+# xsettingsd &
 
 # Enable screen compositing
 # compton &
 
 # Turn off the system bell
-xset -b
+# xset -b
 
 # Enable screen locking on suspend
-xss-lock -- slock &
+# xss-lock -- slock &
 
 # Uncomment this to start xterm instead for debugging purposes!
 # Then you can manually run the window manager and log output

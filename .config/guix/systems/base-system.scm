@@ -63,7 +63,6 @@
                       "nvidia_uvm"))
            (service sddm-service-type
             (sddm-configuration
-              (display-server "wayland")
               (remember-last-user? #t)
               (themes-directory "/opt/sddm")
               (theme "sugar-candy")
@@ -71,7 +70,6 @@
                                    (modules (cons* nvidia-driver %default-xorg-modules))
                                    (server (transform xorg-server))
                                    (drivers '("nvidia"))))))
-           (service gnome-desktop-service-type)
            (modify-services %desktop-services
                             (delete gdm-service-type))))
   (bootloader

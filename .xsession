@@ -48,4 +48,4 @@ xrandr
 xrdb -merge ~/.Xresources
 
 # Fire it up
-exec bspwm
+exec dbus-launch bspwm

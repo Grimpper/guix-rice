@@ -157,7 +157,7 @@ time = %I:%M %p
 time-alt = %A, %d %B %Y
 
 format = <label>
-format-prefix = " "
+format-prefix = " "
 format-prefix-font = 3
 format-prefix-foreground = ${color.CYAN2}
 format-prefix-background = ${color.BGL}
@@ -261,7 +261,7 @@ type = custom/script
 exec = ~/.config/bspwm/polybar/scripts/notification-github.sh
 interval = 60
 label-background = ${color.BGL}
-click-left = google-chrome-stable --newtab https://github.com/notifications
+click-left = $BROWSER --newtab https://github.com/notifications
 
 ;; _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
@@ -278,6 +278,7 @@ content-font = 5
 content-foreground = ${color.GREEN}
 content-padding = 0
 
-click-left = ~/.config/bspwm/rofi/bin/launcher
+click-left = rofi -show drun
+
 
 ;; _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

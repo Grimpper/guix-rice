@@ -14,6 +14,9 @@
    "xdg-dbus-proxy" ;; For Flatpak
 
    ;; Needed apps for the desktop environment
+   "lm-sensors"
+   "cava"
+   "jq"
    "git"
    "openssh"
    "ripgrep"

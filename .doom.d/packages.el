@@ -52,3 +52,6 @@
 (package! iedit)
 (package! org-appear)
 (package! hide-comnt)
+(package! emacs-application-framework
+  :recipe (:host github :repo "manateelazycat/emacs-application-framework"
+           :files ("eaf.el" "src/lisp/*.el")))

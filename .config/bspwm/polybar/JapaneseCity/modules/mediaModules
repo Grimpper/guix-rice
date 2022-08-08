@@ -116,3 +116,11 @@ tail = true
 click-left = ~/.config/bspwm/polybar/scripts/pipewire-microphone.sh --toggle &
 
 ;; _-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
+
+[module/now-playing]
+type = custom/script
+tail = true
+;format-prefix = ""
+format = <label>
+exec = ~/.config/bspwm/polybar/scripts/now-playing.py
+click-right = "kill -USR1 $(pgrep --oldest --parent %pid%)"

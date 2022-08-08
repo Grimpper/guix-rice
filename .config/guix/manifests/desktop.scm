@@ -7,9 +7,7 @@
    "setxkbmap"
    "sxhkd"
    "xsetroot"
-   "mpd"
    "picom"
-   "polybar"
    "rofi"
    "dunst"
    "pavucontrol"
@@ -17,11 +15,17 @@
    "fontconfig"
    "adwaita-icon-theme"
 
+   ;; Needed for the bar
+   "polybar"
+   "python"
+   "python-dbus"
+   "playerctl"
+
    ;; Needed apps for the desktop environment
    "git"
    "ripgrep"
    "emacs"
    "emacs-vterm"
    "man-db" ;; Enable man pages for the profile
-   "flameshot"
-  ))
+   "flameshot"))
+  

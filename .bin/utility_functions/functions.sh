@@ -24,7 +24,7 @@ function installProfiles {
 
       mkdir -p $profilePath
       GUIX_PROFILE="$profilePath/$profile"
-      guix package --manifest=$manifestPath --profile="$GUIX_PROFILE" --substitute-urls="https://bordeaux.guix.gnu.org"
+      guix package --manifest=$manifestPath --profile=$GUIX_PROFILE --substitute-urls="https://bordeaux.guix.gnu.org"
 
       # Source the new profile
       activateProfiles $profile

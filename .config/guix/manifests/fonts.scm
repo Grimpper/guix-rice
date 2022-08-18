@@ -15,4 +15,10 @@
    ;; "font-google-material-design-icons"
    ;; "gs-fonts"
    ;; "font-adobe-source-han-sans"
-   "font-nerd-fonts")) ;; Asian characters
+   "font-overpass"
+   "font-juliamono"
+   "font-ibm-plex"
+
+   ;; Custom packages
+   "font-nerd-fonts"
+   "font-et-book")) ;; Asian characters

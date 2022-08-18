@@ -1,1 +1,5 @@
+# System symlink
 .config/guix/current
+
+# Generated emacs files
+*.el

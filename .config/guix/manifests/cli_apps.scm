@@ -3,6 +3,9 @@
    ;; Terminal emulators
    "alacritty"
 
+   ;; Utilities
+   "unzip"
+
    ;; Text editors
    "vim"
    "emacs"

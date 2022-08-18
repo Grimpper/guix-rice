@@ -1,7 +1,7 @@
 # We're in Emacs, yo
 export VISUAL=emacsclient
 export EDITOR="$VISUAL"
-export BROWSER=chromium
+export BROWSER=firefox
 
 # Add scripts to path
 export PATH=$PATH:$HOME/.bin

@@ -65,20 +65,10 @@ setting, and load it if it exists.
 
 *** Windows
 
-I find it rather handy to be asked which buffer I want to see after splitting
-the window. Let's make that happen.
-
 First, we'll enter the new window
 #+begin_src emacs-lisp
 (setq evil-vsplit-window-right t
       evil-split-window-below t)
-#+end_src
-
-Then, we'll pull up a buffer prompt.
-#+begin_src emacs-lisp
-(defadvice! prompt-for-buffer (&rest _)
-  :after '(evil-window-split evil-window-vsplit)
-  (consult-buffer))
 #+end_src
 
 Window rotation is nice, and can be found under =SPC w r= and =SPC w R=.
@@ -110,6 +100,17 @@ I'd much rather have my new buffers in ~org-mode~ than ~fundamental-mode~, hence
 #+end_src
 For some reason this + the mixed pitch hook causes issues with hydra and so I'll
 just need to resort to =SPC b o= for now.
+
+#+begin_src emacs-lisp
+(map! :map evil-motion-state-map
+      "C-<up>" #'evil-scroll-line-up
+      "C-<down>" #'evil-scroll-line-down
+
+      "C-s" #'evil-window-left
+      "C-d" #'evil-window-down
+      "C-e" #'evil-window-up
+      "C-f" #'evil-window-right)
+#+end_src
 
 ** Doom configuration
 *** Modules
@@ -212,10 +213,10 @@ doom-quit                    ; DOOM quit-message prompts when you quit Emacs
 hl-todo                      ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
 ;;hydra                      ; quick documentation for related commands
 ;;indent-guides              ; highlighted indent columns, notoriously slow
-(ligatures +extra)           ; ligatures and symbols to make your code pretty again
+ligatures                    ; ligatures and symbols to make your code pretty again
 ;;minimap                    ; show a map of the code on the side
 modeline                     ; snazzy, Atom-inspired modeline, plus API
-nav-flash                    ; blink the current line after jumping
+;;nav-flash                    ; blink the current line after jumping
 ;;neotree                    ; a project drawer, like NERDTree for vim
 ophints                      ; highlight the region an operation acts on
 (popup                       ; tame sudden yet inevitable temporary windows
@@ -316,7 +317,7 @@ associated file.
 #+begin_src emacs-lisp
 ;;agda                       ; types of types of types of types...
 ;;beancount                  ; mind the GAAP
-;;(cc +lsp)                  ; C > C++ == 1
+(cc +lsp)                  ; C > C++ == 1
 ;;clojure                    ; java with a lisp
 ;;common-lisp                ; if you've seen one lisp, you've seen them all
 ;;coq                        ; proofs-as-programs
@@ -341,8 +342,8 @@ ess                          ; emacs speaks statistics
 ;;idris                      ;
 json                         ; At least it ain't XML
 ;;(java +lsp)                ; the poster child for carpal tunnel syndrome
-(javascript +lsp)            ; all(hope(abandon(ye(who(enter(here))))))
-(julia +lsp)                 ; Python, R, and MATLAB in a blender
+;;(javascript +lsp)            ; all(hope(abandon(ye(who(enter(here))))))
+;;(julia +lsp)                 ; Python, R, and MATLAB in a blender
 ;;kotlin                     ; a better, slicker Java(Script)
 (latex                       ; writing papers in Emacs has never been so fun
  +latexmk                    ; what else would you use?
@@ -376,7 +377,7 @@ markdown                     ; writing docs for people to ignore
 ;;rest                       ; Emacs as a REST client
 ;;rst                        ; ReST in peace
 ;;(ruby +rails)              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-(rust +lsp)                  ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+;;(rust +lsp)                  ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
 ;;scala                      ; java, but good
 scheme                       ; a fully conniving family of lisps
 sh                           ; she sells {ba,z,fi}sh shells on the C xor
@@ -438,67 +439,10 @@ aspects are nice, but on others I prefer Fira.
 )
 #+end_src
 
-#+attr_html: :class invertible :alt Screenshot of the fonts within Emacs.
-[[https://tecosaur.com/lfs/emacs-config/screenshots/font-face.png]]
-
-In addition to these fonts, Merriweather is used with =nov.el=, and Alegreya as a
-serifed proportional font used by =mixed-pitch-mode= for =writeroom-mode= with Org
-files.
-
-Because we care about how things look let's add a check to make sure we're told
-if the system doesn't have any of those fonts.
-
-#+name: detect-missing-fonts
-#+begin_src emacs-lisp :tangle no
-(defvar required-fonts '("JetBrainsMono.*" "Overpass" "JuliaMono" "IBM Plex Mono" "Merriweather" "Alegreya"))
-
-(defvar available-fonts
-  (delete-dups (or (font-family-list)
-                   (split-string (shell-command-to-string "fc-list : family")
-                                 "[,\n]"))))
-
-(defvar missing-fonts
-  (delq nil (mapcar
-             (lambda (font)
-               (unless (delq nil (mapcar (lambda (f)
-                                           (string-match-p (format "^%s$" font) f))
-                                         available-fonts))
-                 font))
-             required-fonts)))
-
-(if missing-fonts
-    (pp-to-string
-     `(unless noninteractive
-        (add-hook! 'doom-init-ui-hook
-          (run-at-time nil nil
-                       (lambda ()
-                         (message "%s missing the following fonts: %s"
-                                  (propertize "Warning!" 'face '(bold warning))
-                                  (mapconcat (lambda (font)
-                                               (propertize font 'face 'font-lock-variable-name-face))
-                                             ',missing-fonts
-                                             ", "))
-                         (sleep-for 0.5))))))
-  ";; No missing fonts detected")
-#+end_src
-
-#+begin_src emacs-lisp :noweb no-export
-<<detect-missing-fonts()>>
-#+end_src
-
-This way whenever fonts are missing, after Doom's UI has initialised, a warning
-listing the missing fonts should appear for at least half a second.
-
 **** Theme and modeline
 
-~doom-one~ is nice and all, but I find the ~vibrant~ variant nicer. Oh, and with the
-nice selection doom provides there's no reason for me to want the defaults.
-
 #+begin_src emacs-lisp
-(setq doom-theme 'doom-vibrant)
-(remove-hook 'window-setup-hook #'doom-init-theme-h)
-(add-hook 'after-init-hook #'doom-init-theme-h 'append)
-(delq! t custom-theme-load-path)
+(load-theme 'doom-one)
 #+end_src
 
 However, by default ~red~ text is used in the ~modeline~, so let's make that orange
@@ -530,12 +474,6 @@ Relative line numbers are fantastic for knowing how far away line numbers are,
 then =ESC 12 <UP>= gets you exactly where you think.
 #+begin_src emacs-lisp
 (setq display-line-numbers-type 'relative)
-#+end_src
-
-I'd like some slightly nicer default buffer names
-#+begin_src emacs-lisp
-(setq doom-fallback-buffer-name "► Doom"
-      +doom-dashboard-name "► Doom")
 #+end_src
 
 *** Some helper macros
@@ -958,6 +896,16 @@ sounds nice to me.
 (package! rotate)
 #+end_src
 
+*** Color identifiers
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! color-identifiers-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'lsp-ccls-after-open-hook 'global-color-identifiers-mode)
+#+end_src
+
 *** Which-key
 
 #+begin_quote
@@ -983,3 +931,63 @@ let's change that, and do a few other similar tweaks while we're at it.
 
 #+attr_html: :class invertible :alt Whichkey triggered on an evil motion
 [[https://tecosaur.com/lfs/emacs-config/screenshots/whichkey-evil.png]]
+
+** Tools
+*** Vertico
+
+#+begin_src emacs-lisp
+(map! :map vertico-map
+      "<prior>" #'vertico-scroll-down
+      "<next>" #'vertico-scroll-up)
+#+end_src
+
+*** LSP
+
+CCLS requires xref
+#+begin_src emacs-lisp :tangle packages.el
+(package! color-identifiers-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-idle-delay 0.0
+      company-minimum-prefix-length 1
+      lsp-lens-enable nil
+      lsp-idle-delay 0.1)  ;; clangd is fast
+
+(custom-set-faces!
+  '(ccls-code-lens-face :inherit shadow :height 0.75))
+
+(add-hook 'lsp-ccls-after-open-hook 'ccls-code-lens-mode)
+#+end_src
+
+*** EVIL
+
+#+begin_quote
+From the =:editor evil= module.
+#+end_quote
+
+When I want to make a substitution, I want it to be global more often than not
+--- so let's make that the default.
+
+Now, EVIL cares a fair bit about keeping compatibility with Vim's default
+behaviour. I don't. There are some particular settings that I'd rather be
+something else, so let's change them.
+
+#+begin_src emacs-lisp
+(after! evil
+  (setq evil-ex-substitute-global t     ; I like my s/../.. to by global by default
+        evil-move-cursor-back nil       ; Don't move the block cursor when toggling insert mode
+        evil-kill-on-visual-paste nil)) ; Don't put overwritten text in the kill ring
+#+end_src
+
+I don't use ~evil-escape-mode~, so I may as well turn it off, I've heard it
+contributes a typing delay. I'm not sure it's much, but it is an extra
+~pre-command-hook~ that I don't benefit from, so...
+It seems that there's a dedicated package for this, so instead of just disabling
+the mode on startup, let's prevent installation of the package.
+#+begin_src emacs-lisp :tangle packages.el
+(package! evil-escape :disable t)
+#+end_src

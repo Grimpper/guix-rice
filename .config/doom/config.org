@@ -224,7 +224,7 @@ ophints                      ; highlight the region an operation acts on
  +defaults)                  ; default popup rules
 ;;(tabs                      ; an tab bar for Emacs
 ;;  +centaur-tabs)           ; ... with prettier tabs
-treemacs                     ; a project drawer, like neotree but cooler
+(treemacs +lsp)                     ; a project drawer, like neotree but cooler
 ;;unicode                    ; extended unicode support for various languages
 vc-gutter                    ; vcs diff in the fringe
 vi-tilde-fringe              ; fringe tildes to mark beyond EOB
@@ -887,6 +887,16 @@ Specify a ~:branch~ to install a package from a particular branch or tag.
 #+end_src
 
 ** Convenience
+*** Topsy (stiky scroll)
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! topsy)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook #'topsy-mode)
+#+end_src
+
 *** Rotate (window management)
 
 The =rotate= package just adds the ability to rotate window layouts, but that
@@ -939,6 +949,20 @@ let's change that, and do a few other similar tweaks while we're at it.
 (map! :map vertico-map
       "<prior>" #'vertico-scroll-down
       "<next>" #'vertico-scroll-up)
+#+end_src
+
+**** Theming
+
+Prefix the current candidate with ». From [[https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow][github - vertico prefix]]
+#+begin_src emacs-lisp
+(advice-add #'vertico--format-candidate :around
+            (lambda (orig cand prefix suffix index _start)
+              (setq cand (funcall orig cand prefix suffix index _start))
+              (concat
+               (if (= vertico--index index)
+                   (propertize "» " 'face 'vertico-current)
+                 "  ")
+               cand)))
 #+end_src
 
 *** LSP

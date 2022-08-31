@@ -3,7 +3,7 @@
    ;; Needed fonts for the desktop environment
    ;; "font-fira-code"
    ;; "font-fira-sans"
-   "font-jetbrains-mono"
+   ;; "font-jetbrains-mono"
    ;; "font-iosevka"
    ;; "font-iosevka-aile"
    ;; "font-abattis-cantarell"

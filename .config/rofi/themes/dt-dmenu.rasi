@@ -14,7 +14,7 @@
     prompt-font:                "JetBrains Mono Extra-Bold 13";
     prompt-background:          #84c340;
     prompt-foreground:          #282c34;
-    prompt-padding:             6px;
+    prompt-padding:             7px;
     selected-normal-background: #bd93f9;
     selected-normal-foreground: #282c34;
 }
@@ -45,13 +45,13 @@ listview {
 }
 
 entry {
-    padding: 6px;
+    padding: 8px;
     expand: false;
     width: 10em;
 }
 
 element {
-    padding: 7px 8px 6px 8px;
+    padding: 7px 8px 7px 8px;
 }
 
 element selected {

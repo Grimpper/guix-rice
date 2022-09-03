@@ -107,10 +107,8 @@ xsetroot -cursor_name left_ptr
 exec mpd &
 
 # Start bspwm scripts
-bspcolors
-bspcomp
-bspbar
-bspfloat &
+pkill polybar
+polybar -q main &
 
 feh --bg-fill $HOME/wallpapers/ultrawide/hyperbeast/human_face_cropped.jpg
 

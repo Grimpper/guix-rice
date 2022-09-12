@@ -1,0 +1,19 @@
+export GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
+export GUIX_MANIFESTS=$HOME/.config/guix/manifests
+
+# Load the default Guix profile
+GUIX_PROFILE="$HOME/.guix-profile"
+. "$GUIX_PROFILE"/etc/profile
+
+# Load installed profiles
+. $HOME/.bin/pollute.sh
+
+XCURSOR_PATH=$XCURSOR_PATH:$GUIX_EXTRA_PROFILES/desktop/desktop/share/icons
+
+# Make Java applications aware this is a non-reparenting window manager
+export _JAVA_AWT_WM_NONREPARENTING=1
+
+# Start Shepherd to manage user daemons
+if [ -z "$(pgrep -u grim shepherd)" ]; then
+  shepherd
+fi

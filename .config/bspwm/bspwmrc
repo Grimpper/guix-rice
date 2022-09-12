@@ -112,4 +112,4 @@ polybar -q main &
 
 feh --bg-fill $HOME/wallpapers/ultrawide/hyperbeast/human_face_cropped.jpg
 
-picom &
+picom --experimental-backends & # Only for nouveau drivers

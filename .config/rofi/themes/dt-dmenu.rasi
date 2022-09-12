@@ -6,16 +6,16 @@
  */
 
 * {
-    background-color:           #282c34;
-    border-color:               #282c34;
+    background-color:           #12151d;
+    border-color:               #1e222a;
     text-color:                 #bbc2cf;
-    height:                     37px;
-    font:                       "JetBrains Mono 13";
-    prompt-font:                "JetBrains Mono Extra-Bold 13";
-    prompt-background:          #84c340;
+    height:                     34px;
+    font:                       "JetBrains Mono 12";
+    prompt-font:                "JetBrains Mono Extra-Bold 12";
+    prompt-background:          #008aff;
     prompt-foreground:          #282c34;
     prompt-padding:             7px;
-    selected-normal-background: #bd93f9;
+    selected-normal-background: #c678dd;
     selected-normal-foreground: #282c34;
 }
 

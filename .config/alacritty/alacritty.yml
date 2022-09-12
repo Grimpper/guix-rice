@@ -164,38 +164,32 @@ font:
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Colors (Cobalt 2)
+# Colors (Doom One)
 colors:
-  cursor:
-    text: "#fefff2"
-    cursor: "#f0cc09"
-
-  selection:
-    text: "#ffffff"
-    background: "#42444A"
-
+  # Default colors
   primary:
-    background: "#282C34"
-    foreground: "#ffffff"
+    background: "#282c34"
+    foreground: "#bbc2cf"
 
+  # Normal colors
   normal:
-    black: "#000000"
-    red: "#ff0000"
-    green: "#38de21"
-    yellow: "#ffe50a"
-    blue: "#1460d2"
-    magenta: "#ff005d"
-    cyan: "#00bbbb"
-    white: "#bbbbbb"
+    black:   "#282c34"
+    red:     "#ff6c6b"
+    green:   "#98be65"
+    yellow:  "#ecbe7b"
+    blue:    "#51afef"
+    magenta: "#c678dd"
+    cyan:    "#46d9ff"
+    white:   "#bbc2cf"
 
   bright:
     black: "#555555"
     red: "#f40e17"
     green: "#3bd01d"
     yellow: "#edc809"
-    blue: "#5555ff"
+    blue: "#0398fc"
     magenta: "#ff55ff"
-    cyan: "#6ae3fa"
+    cyan: "#03cbff"
     white: "#ffffff"
 
   # Dim colors

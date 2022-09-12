@@ -21,4 +21,5 @@
 
    ;; Custom packages
    "font-nerd-fonts"
-   "font-et-book")) ;; Asian characters
+   "font-et-book"
+   "font-powerline")) ;; Asian characters

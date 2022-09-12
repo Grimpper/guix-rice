@@ -2,6 +2,7 @@
  '(
    ;; Browsers
    "ungoogled-chromium"
+   "firefox"
 
    ;; Office
    "gimp"

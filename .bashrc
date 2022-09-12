@@ -34,3 +34,5 @@ alias pollute='source $HOME/.bin/pollute.sh'
 
 bind '"\e[3;5~":kill-word'
 bind '"\C-h":backward-kill-word'
+
+# eval "$(starship init bash)"

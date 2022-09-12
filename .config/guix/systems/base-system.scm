@@ -4,30 +4,31 @@
   #:use-module (gnu services sddm)
   #:use-module (gnu packages xorg)
   #:use-module (nongnu packages linux)
-  #:use-module (nongnu packages nvidia)
+  ;; #:use-module (nongnu packages nvidia)
   #:use-module (guix transformations))
 
 (use-service-modules
-  cups
-  desktop
-  networking
-  ssh
-  xorg
-  linux)
+ cups
+ desktop
+ networking
+ ssh
+ xorg
+ linux
+ nix)
 
 (use-package-modules linux)
 
-(define transform
-  (options->transformation
-   '((with-graft . "mesa=nvda"))))
+;; (define transform
+;;   (options->transformation
+;;    '((with-graft . "mesa=nvda"))))
 
 (define-public base-operating-system
  (operating-system
   (kernel linux-lts)
-  (kernel-arguments (append
-                     '("modprobe.blacklist=nouveau")
-                     %default-kernel-arguments))
-  (kernel-loadable-modules (list nvidia-driver))
+  ;; (kernel-arguments (append
+  ;;                    '("modprobe.blacklist=nouveau")
+  ;;                    %default-kernel-arguments))
+  ;; (kernel-loadable-modules (list nvidia-driver))
   (firmware (list linux-firmware))
   (locale "en_US.utf8")
   (timezone "Europe/Madrid")
@@ -44,34 +45,36 @@
   (packages
     (append
       (list (specification->package "bspwm")
-            (specification->package "alacritty")
-            (specification->package "emacs")
-            (specification->package "emacs-vterm")
-            (specification->package "nss-certs"))
-      %base-packages))
+            (specification->package "sway")
+            (specification->package "nss-certs")
+            (specification->package "nix"))
+          %base-packages))
   (services
-    (cons* (pam-limits-service
-            (list
-             (pam-limits-entry "*" 'hard 'nofile 524288)))
-           (simple-service
-            'custom-udev-rules udev-service-type
-            (list nvidia-driver))
-           (service kernel-module-loader-service-type
-                    '("ipmi_devintf"
-                      "nvidia"
-                      "nvidia_modset"
-                      "nvidia_uvm"))
-           (service sddm-service-type
-            (sddm-configuration
-              (remember-last-user? #t)
-              (themes-directory "/opt/sddm")
-              (theme "sugar-candy")
-              (xorg-configuration (xorg-configuration
-                                   (modules (cons* nvidia-driver %default-xorg-modules))
-                                   (server (transform xorg-server))
-                                   (drivers '("nvidia"))))))
-           (modify-services %desktop-services
-                            (delete gdm-service-type))))
+   (cons* (service nix-service-type)
+          (pam-limits-service
+           (list
+            (pam-limits-entry "*" 'hard 'nofile 524288)))
+          ;; (simple-service
+          ;;  'custom-udev-rules udev-service-type
+          ;;  (list nvidia-driver))
+          ;; (service kernel-module-loader-service-type
+          ;;          '("ipmi_devintf"
+          ;;            "nvidia"
+          ;;            "nvidia_modset"
+          ;;            "nvidia_uvm"))
+          (service sddm-service-type
+                   (sddm-configuration
+                    (display-server "wayland")
+                    (remember-last-user? #t)
+                    (themes-directory "/opt/sddm")
+                    (theme "sugar-candy")
+                    ;; (xorg-configuration (xorg-configuration
+                    ;;                      (modules (cons* nvidia-driver %default-xorg-modules))
+                    ;;                      (server (transform xorg-server))
+                    ;;                      (drivers '("nvidia"))))
+                    ))
+          (modify-services %desktop-services
+                           (delete gdm-service-type))))
   (bootloader
     (bootloader-configuration
       (bootloader grub-efi-bootloader)

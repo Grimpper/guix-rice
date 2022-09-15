@@ -2,6 +2,25 @@
 #+author: Grimpper
 #+setupfile: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 
+* Installation
+
+#+begin_src shell
+# Download dotfiles
+git clone https://github.com/Grimpper/guix-rice.git ~/.dotfiles
+cd ~/.dotfiles
+stow .
+
+# Tangle config.or
+emacs --batch --eval "(progn (require 'org) (setq org-confirm-babel-evaluate nil) (org-babel-tangle-file \"~/.config/doom/config.org\"))"
+
+# Install doom
+git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.emacs.d
+~/.emacs.d/bin/doom install
+
+# Refresh config
+~/.emacs.d/bin/doom sync
+#+end_src
+
 * Rudimentary configuration
 
 Make this file run (slightly) faster with lexical binding (see [[https://nullprogram.com/blog/2016/12/22/][this blog post]]
@@ -80,6 +99,7 @@ navigation/swapping commands.
 #+begin_src emacs-lisp
 (map! :map evil-window-map
       "SPC" #'rotate-layout
+      "N" #'evil-window-vnew
       ;; Navigation
       "<left>"     #'evil-window-left
       "<down>"     #'evil-window-down
@@ -90,6 +110,27 @@ navigation/swapping commands.
       "C-<down>"       #'+evil/window-move-down
       "C-<up>"         #'+evil/window-move-up
       "C-<right>"      #'+evil/window-move-right)
+#+end_src
+
+**** Resize
+
+#+begin_src emacs-lisp
+(defhydra doom-window-resize-hydra (:hint nil)
+  "
+             _e_ increase height
+_s_ decrease width    _f_ increase width
+             _d_ decrease height
+"
+  ("s" evil-window-decrease-width)
+  ("e" evil-window-increase-height)
+  ("d" evil-window-decrease-height)
+  ("f" evil-window-increase-width)
+
+  ("q" nil))
+
+(map! :leader
+      :desc "Hydra resize"
+      "w r" #'doom-window-resize-hydra/body)
 #+end_src
 
 *** Buffer defaults
@@ -192,8 +233,7 @@ I reckon enabling half the modules Doom provides should do it.
 
 #+name: doom-completion
 #+begin_src emacs-lisp
-(company                     ; the ultimate code completion backend
- +childframe)                ; ... when your children are better than you
+company                     ; the ultimate code completion backend
 ;;helm                       ; the *other* search engine for love and life
 ;;ido                        ; the other *other* search engine...
 ;; (ivy                      ; a search engine for love and life
@@ -211,17 +251,15 @@ doom-quit                    ; DOOM quit-message prompts when you quit Emacs
 ;;(emoji +unicode)             ; 🙂
 ;;fill-column                ; a `fill-column' indicator
 hl-todo                      ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-;;hydra                      ; quick documentation for related commands
+hydra                      ; quick documentation for related commands
 ;;indent-guides              ; highlighted indent columns, notoriously slow
-ligatures                    ; ligatures and symbols to make your code pretty again
+(ligatures +extra)                    ; ligatures and symbols to make your code pretty again
 ;;minimap                    ; show a map of the code on the side
 modeline                     ; snazzy, Atom-inspired modeline, plus API
-;;nav-flash                    ; blink the current line after jumping
+;;nav-flash                  ; blink the current line after jumping
 ;;neotree                    ; a project drawer, like NERDTree for vim
 ophints                      ; highlight the region an operation acts on
-(popup                       ; tame sudden yet inevitable temporary windows
- +all                        ; catch all popups that start with an asterix
- +defaults)                  ; default popup rules
+(popup +defaults)            ; tame sudden yet inevitable temporary windows
 ;;(tabs                      ; an tab bar for Emacs
 ;;  +centaur-tabs)           ; ... with prettier tabs
 (treemacs +lsp)                     ; a project drawer, like neotree but cooler
@@ -230,7 +268,7 @@ ophints                      ; highlight the region an operation acts on
 vi-tilde-fringe              ; fringe tildes to mark beyond EOB
 (window-select +numbers)     ; visually switch windows
 workspaces                   ; tab emulation, persistence & separate workspaces
-zen                          ; distraction-free coding or writing
+;;zen                          ; distraction-free coding or writing
 #+end_src
 
 #+name: doom-editor
@@ -260,7 +298,7 @@ vc                           ; version-control and Emacs, sitting in a tree
 
 #+name: doom-term
 #+begin_src emacs-lisp
-;;eshell                     ; the elisp shell that works everywhere
+eshell                     ; the elisp shell that works everywhere
 ;;shell                      ; simple shell REPL for Emacs
 ;;term                       ; basic terminal emulator for Emacs
 vterm                        ; the best terminal emulation in Emacs
@@ -269,13 +307,13 @@ vterm                        ; the best terminal emulation in Emacs
 #+name: doom-checkers
 #+begin_src emacs-lisp
 syntax                       ; tasing you for every semicolon you forget
-(:if (executable-find "aspell") spell) ; tasing you for misspelling mispelling
-grammar                      ; tasing grammar mistake every you make
+;;(spell +flyspell)          ; tasing you for misspelling mispelling
+;;grammar                    ; tasing grammar mistake every you make
 #+end_src
 
 #+name: doom-tools
 #+begin_src emacs-lisp
-ansible                      ; a crucible for infrastructure as code
+;;ansible                      ; a crucible for infrastructure as code
 ;;debugger                   ; FIXME stepping through code, to help you add bugs
 ;;direnv                     ; be direct about your environment
 docker                       ; port everything to containers
@@ -358,7 +396,7 @@ json                         ; At least it ain't XML
 ;;nix                        ; I hereby declare "nix geht mehr!"
 ;;ocaml                      ; an objective camel
 (org                         ; organize your plain life in plain text
- +pretty                     ; make org beautiful
+ ;;+pretty                   ; make org beautiful
  +dragndrop                  ; drag & drop files/images into org buffers
  ;;+hugo                     ; use Emacs for hugo blogging
  ;;+noter                    ; enhanced PDF notetaking
@@ -433,10 +471,10 @@ trying out JetBrainsMono NF though. So far I have mixed feelings on it, some
 aspects are nice, but on others I prefer Fira.
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "JetBrainsMono NF" :size 18)
-      doom-big-font (font-spec :family "JetBrainsMono NF" :size 24)
+(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 18)
+      doom-big-font (font-spec :family "JetBrainsMono Nerd Font" :size 24)
       doom-variable-pitch-font (font-spec :family "Overpass" :size 20)
-      doom-unicode-font (font-spec :family "JetBrainsMono NF")
+      doom-unicode-font (font-spec :family "JetBrainsMono Nerd Font")
       doom-serif-font (font-spec :family "IBM Plex Mono" :size 22 :weight 'light)
 )
 #+end_src
@@ -470,6 +508,12 @@ thus not worth noting in the modeline. So, let's conditionally hide it.
 (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding)
 #+end_src
 
+All-the-icons uses a scale factor of 1.2 which causes some height issues on the modeline setting it to 1.0 fixes them.
+
+#+begin_src emacs-lisp
+(setq all-the-icons-scale-factor 1.0)
+#+end_src
+
 **** Miscellaneous
 
 Relative line numbers are fantastic for knowing how far away line numbers are,
@@ -486,28 +530,6 @@ There are a few handy macros added by doom, namely
 - ~add-load-path!~ for adding directories to the ~load-path~ where ~Emacs~ looks when
   you load packages with ~require~ or ~use-package~
 - ~map!~ for binding new keys
-
-*** Allow babel execution in CLI actions
-
-In this config I sometimes generate code to include in my config.
-This works nicely, but for it to work with =doom sync= et. al. I need to make sure
-that Org doesn't try to confirm that I want to allow evaluation (I do!).
-
-Thankfully Doom supports =$DOOMDIR/cli.el= file which is sourced every time a CLI
-command is run, so we can just enable evaluation by setting
-~org-confirm-babel-evaluate~ to ~nil~ there.
-While we're at it, we should silence ~org-babel-execute-src-block~ to
-avoid polluting the output.
-
-#+begin_src emacs-lisp :tangle cli.el :comments no
-;;; cli.el -*- lexical-binding: t; -*-
-(setq org-confirm-babel-evaluate nil)
-
-(defun doom-shut-up-a (orig-fn &rest args)
-  (quiet! (apply orig-fn args)))
-
-(advice-add 'org-babel-execute-src-block :around #'doom-shut-up-a)
-#+end_src
 
 *** Dashboard quick actions
 
@@ -554,27 +576,6 @@ Now that the dashboard is so convenient, I'll want to make it easier to get to.
 (map! :n [mouse-8] #'better-jumper-jump-backward
       :n [mouse-9] #'better-jumper-jump-forward)
 #+end_src
-
-*** Window title
-
-I'd like to have just the buffer name, then if applicable the project folder
-#+begin_src emacs-lisp
-(setq frame-title-format
-      '(""
-        (:eval
-         (if (s-contains-p org-roam-directory (or buffer-file-name ""))
-             (replace-regexp-in-string
-              ".*/[0-9]*-?" "☰ "
-              (subst-char-in-string ?_ ?  buffer-file-name))
-           "%b"))
-        (:eval
-         (let ((project-name (projectile-project-name)))
-           (unless (string= "-" project-name)
-             (format (if (buffer-modified-p)  " ◉ %s" "  ●  %s") project-name))))))
-#+end_src
-
-For example when I open my config file it the window will be titled =config.org ●
-doom= then as soon as I make a change it will become =config.org ◉ doom=.
 
 *** Splash screen
 
@@ -824,6 +825,124 @@ something simple.
   (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn))
 #+end_src
 
+** Helpers
+**** Snippets
+
+I often want to set =src-block= headers, and it's a pain to
++ type them out
++ remember what the accepted values are
++ oh, and specifying the same language again and again
+
+We can solve this in three steps
++ having one-letter snippets, conditioned on ~(point)~ being within a src header
++ creating a nice prompt showing accepted values and the current default
++ pre-filling the =src-block= language with the last language used
+
+For header args, the keys I'll use are
++ =r= for =:results=
++ =e= for =:exports=
++ =v= for =:eval=
++ =s= for =:session=
++ =d= for =:dir=
+
+#+begin_src emacs-lisp
+(defun +yas/org-src-header-p ()
+  "Determine whether `point' is within a src-block header or header-args."
+  (pcase (org-element-type (org-element-context))
+    ('src-block (< (point) ; before code part of the src-block
+                   (save-excursion (goto-char (org-element-property :begin (org-element-context)))
+                                   (forward-line 1)
+                                   (point))))
+    ('inline-src-block (< (point) ; before code part of the inline-src-block
+                          (save-excursion (goto-char (org-element-property :begin (org-element-context)))
+                                          (search-forward "]{")
+                                          (point))))
+    ('keyword (string-match-p "^header-args" (org-element-property :value (org-element-context))))))
+#+end_src
+
+Now let's write a function we can reference in yasnippets to produce a nice
+interactive way to specify header args.
+
+#+begin_src emacs-lisp
+(defun +yas/org-prompt-header-arg (arg question values)
+  "Prompt the user to set ARG header property to one of VALUES with QUESTION.
+The default value is identified and indicated. If either default is selected,
+or no selection is made: nil is returned."
+  (let* ((src-block-p (not (looking-back "^#\\+property:[ \t]+header-args:.*" (line-beginning-position))))
+         (default
+           (or
+            (cdr (assoc arg
+                        (if src-block-p
+                            (nth 2 (org-babel-get-src-block-info t))
+                          (org-babel-merge-params
+                           org-babel-default-header-args
+                           (let ((lang-headers
+                                  (intern (concat "org-babel-default-header-args:"
+                                                  (+yas/org-src-lang)))))
+                             (when (boundp lang-headers) (eval lang-headers t)))))))
+            ""))
+         default-value)
+    (setq values (mapcar
+                  (lambda (value)
+                    (if (string-match-p (regexp-quote value) default)
+                        (setq default-value
+                              (concat value " "
+                                      (propertize "(default)" 'face 'font-lock-doc-face)))
+                      value))
+                  values))
+    (let ((selection (consult--read values :prompt question :default default-value)))
+      (unless (or (string-match-p "(default)$" selection)
+                  (string= "" selection))
+        selection))))
+#+end_src
+
+Finally, we fetch the language information for new source blocks.
+
+Since we're getting this info, we might as well go a step further and also
+provide the ability to determine the most popular language in the buffer that
+doesn't have any =header-args= set for it (with =#+properties=).
+
+#+begin_src emacs-lisp
+(defun +yas/org-src-lang ()
+  "Try to find the current language of the src/header at `point'.
+Return nil otherwise."
+  (let ((context (org-element-context)))
+    (pcase (org-element-type context)
+      ('src-block (org-element-property :language context))
+      ('inline-src-block (org-element-property :language context))
+      ('keyword (when (string-match "^header-args:\\([^ ]+\\)" (org-element-property :value context))
+                  (match-string 1 (org-element-property :value context)))))))
+
+(defun +yas/org-last-src-lang ()
+  "Return the language of the last src-block, if it exists."
+  (save-excursion
+    (beginning-of-line)
+    (when (re-search-backward "^[ \t]*#\\+begin_src" nil t)
+      (org-element-property :language (org-element-context)))))
+
+(defun +yas/org-most-common-no-property-lang ()
+  "Find the lang with the most source blocks that has no global header-args, else nil."
+  (let (src-langs header-langs)
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "^[ \t]*#\\+begin_src" nil t)
+        (push (+yas/org-src-lang) src-langs))
+      (goto-char (point-min))
+      (while (re-search-forward "^[ \t]*#\\+property: +header-args" nil t)
+        (push (+yas/org-src-lang) header-langs)))
+
+    (setq src-langs
+          (mapcar #'car
+                  ;; sort alist by frequency (desc.)
+                  (sort
+                   ;; generate alist with form (value . frequency)
+                   (cl-loop for (n . m) in (seq-group-by #'identity src-langs)
+                            collect (cons n (length m)))
+                   (lambda (a b) (> (cdr a) (cdr b))))))
+
+    (car (cl-set-difference src-langs header-langs :test #'string=))))
+#+end_src
+
 * Packages
 ** Loading instructions
 :PROPERTIES:
@@ -896,7 +1015,10 @@ Specify a ~:branch~ to install a package from a particular branch or tag.
 #+end_src
 
 #+begin_src emacs-lisp
-(add-hook 'prog-mode-hook #'topsy-mode)
+;;(add-hook 'prog-mode-hook
+;;          (lambda ()
+;;            (unless (derived-mode-p 'makefile-mode)
+;;              (topsy-mode 1))))
 #+end_src
 
 *** Rotate (window management)
@@ -916,6 +1038,7 @@ sounds nice to me.
 
 #+begin_src emacs-lisp
 (add-hook 'lsp-ccls-after-open-hook 'global-color-identifiers-mode)
+(add-hook 'lsp-pyright-after-open-hook 'global-color-identifiers-mode)
 #+end_src
 
 *** Which-key
@@ -943,6 +1066,18 @@ let's change that, and do a few other similar tweaks while we're at it.
 
 #+attr_html: :class invertible :alt Whichkey triggered on an evil motion
 [[https://tecosaur.com/lfs/emacs-config/screenshots/whichkey-evil.png]]
+
+*** Hide comments
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! hide-comnt)
+#+end_src
+
+#+begin_src emacs-lisp
+(map! :leader
+      :desc "Toggle comments"
+      "c h" #'hide/show-comments-toggle)
+#+end_src
 
 ** Tools
 *** Vertico
@@ -978,11 +1113,20 @@ CCLS requires xref
 (setq gc-cons-threshold (* 100 1024 1024)
       read-process-output-max (* 1024 1024)
       treemacs-space-between-root-nodes nil
-      company-idle-delay 0.0
-      company-minimum-prefix-length 1
+      ;;company-idle-delay 0.0
+      ;;company-minimum-prefix-length 1
       lsp-lens-enable nil
       lsp-idle-delay 0.1)  ;; clangd is fast
 #+end_src
+
+**** Keybindings
+
+#+begin_src emacs-lisp
+(map! :map evil-normal-state-map
+      "g r" #'xref-find-references
+      "g D" #'xref-find-definitions-other-window)
+#+end_src
+
 
 **** Languages
 
@@ -993,12 +1137,7 @@ CCLS requires xref
   '(ccls-code-lens-face :inherit shadow :height 0.75))
 
 (add-hook 'lsp-ccls-after-open-hook 'ccls-code-lens-mode)
-#+end_src
-
-***** Scheme
-
-#+begin_src emacs-lisp :tangle packages.el
-(package! geiser-guile)
+(add-hook 'lsp-after-initialize-hook 'lsp-headerline-breadcrumb-mode)
 #+end_src
 
 *** EVIL
@@ -1036,7 +1175,7 @@ the mode on startup, let's prevent installation of the package.
 
 #+begin_src emacs-lisp
 (let* ((variable-tuple
-         (cond ((x-list-fonts "JetBrainsMono NF")  '(:font "JetBrainsMono NF"))
+         (cond ((x-list-fonts "DejaVuSansMono Nerd Font Mono")  '(:font "DejaVuSansMono Nerd Font Mono"))
                ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
                ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
                ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
@@ -1050,11 +1189,38 @@ the mode on startup, let's prevent installation of the package.
        `(org-level-7        ((t (:inherit outline-7 ,@variable-tuple))))
        `(org-level-6        ((t (:inherit outline-6 ,@variable-tuple))))
        `(org-level-5        ((t (:inherit outline-5 ,@variable-tuple))))
-       `(org-level-4        ((t (:inherit outline-4 ,@variable-tuple :height 1.0  :weight semi-bold))))
-       `(org-level-3        ((t (:inherit outline-3 ,@variable-tuple :height 1.05  :weight semi-bold))))
-       `(org-level-2        ((t (:inherit outline-2 ,@variable-tuple :height 1.10 :weight semi-bold))))
-       `(org-level-1        ((t (:inherit outline-1 ,@variable-tuple :height 1.15  :weight semi-bold))))
-       `(org-document-title ((t (:inherit default   ,@variable-tuple :height 1.25 :weight semi-bold :foreground "sky blue"))))))
+       `(org-level-4        ((t (:inherit outline-4 ,@variable-tuple :height 1.0  :weight bold))))
+       `(org-level-3        ((t (:inherit outline-3 ,@variable-tuple :height 1.05  :weight bold))))
+       `(org-level-2        ((t (:inherit outline-2 ,@variable-tuple :height 1.1 :weight bold))))
+       `(org-level-1        ((t (:inherit outline-1 ,@variable-tuple :height 1.15  :weight bold))))
+       `(org-document-title ((t (:inherit default   ,@variable-tuple :height 1.3 :weight bold :foreground "sky blue"))))))
+#+end_src
+
+**** Modern
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-modern)
+#+end_src
+
+#+begin_src emacs-lisp
+(setq org-ellipsis " "
+      org-modern-keyword nil
+      org-modern-todo nil
+      org-modern-statistics nil
+      org-modern-block-name nil)
+
+(global-org-modern-mode)
+#+end_src
+
+**** Indent
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! another-package
+  :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-modern-indent-mode)
 #+end_src
 
 **** Sticky header
@@ -1070,15 +1236,18 @@ the mode on startup, let's prevent installation of the package.
 (add-hook 'org-mode-hook 'org-sticky-header-mode)
 #+end_src
 
-**** Modern look
-
-#+begin_src emacs-lisp :tangle packages.el
-(package! org-modern)
-(package! org-modern-indent
-  :recipe (:host github :repo "jdtsmith/org-modern-indent"))
-#+end_src
+*** Shells
+**** Vterm
 
 #+begin_src emacs-lisp
-(global-org-modern-mode)
-(add-hook 'org-mode-hook 'org-modern-indent-mode)
+(setq vterm-shell "/usr/bin/env fish")
+#+end_src
+
+**** Eshell
+
+#+begin_src emacs-lisp
+(add-hook 'eshell-mode-hook (lambda () (company-mode -1)))
+
+(map! :map eshell-mode-map
+      "<home>" #'eshell-bol) ;;Goes to the beginning of line, then skips past the prompt, if any.
 #+end_src

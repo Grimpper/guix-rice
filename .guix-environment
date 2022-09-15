@@ -1,5 +1,8 @@
-export GUIX_EXTRA_PROFILES=$HOME/.guix-extra-profiles
+export GUIX_EXTRA_PROFILES=$HOME/.guix_extra_profiles
 export GUIX_MANIFESTS=$HOME/.config/guix/manifests
+
+# Add new package declaration directory
+export GUIX_PACKAGE_PATH=$HOME/guix-packages
 
 # Load the default Guix profile
 GUIX_PROFILE="$HOME/.guix-profile"

@@ -5,6 +5,7 @@ export BROWSER=firefox
 
 # Add scripts to path
 export PATH=$PATH:$HOME/.bin
+export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.emacs.d/bin
 export PATH=$PATH:$HOME/.vnode/bin
 

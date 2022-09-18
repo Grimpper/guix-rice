@@ -4,7 +4,7 @@
 
 * Installation
 
-#+begin_src shell
+#+begin_src shell :tangle no
 # Download dotfiles
 git clone https://github.com/Grimpper/guix-rice.git ~/.dotfiles
 cd ~/.dotfiles
@@ -43,6 +43,7 @@ It's useful to have some basic personal information
 Apparently this is used by ~GPG~, and all sorts of other things.
 
 ** Better defaults
+
 *** Simple settings
 
 Browsing the web and seeing [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org#use-better-defaults][angrybacon/dotemacs]] and comparing with the values
@@ -154,6 +155,7 @@ just need to resort to =SPC b o= for now.
 #+end_src
 
 ** Doom configuration
+
 *** Modules
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle no
@@ -233,7 +235,9 @@ I reckon enabling half the modules Doom provides should do it.
 
 #+name: doom-completion
 #+begin_src emacs-lisp
-company                     ; the ultimate code completion backend
+;;corfu
+(company                     ; the ultimate code completion backend
+ +childframe)                ; ... when your children are better than you
 ;;helm                       ; the *other* search engine for love and life
 ;;ido                        ; the other *other* search engine...
 ;; (ivy                      ; a search engine for love and life
@@ -253,7 +257,7 @@ doom-quit                    ; DOOM quit-message prompts when you quit Emacs
 hl-todo                      ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
 hydra                      ; quick documentation for related commands
 ;;indent-guides              ; highlighted indent columns, notoriously slow
-(ligatures +extra)                    ; ligatures and symbols to make your code pretty again
+;;(ligatures +extra)                    ; ligatures and symbols to make your code pretty again
 ;;minimap                    ; show a map of the code on the side
 modeline                     ; snazzy, Atom-inspired modeline, plus API
 ;;nav-flash                  ; blink the current line after jumping
@@ -278,7 +282,7 @@ file-templates               ; auto-snippets for empty files
 fold                         ; (nigh) universal code folding
 format                       ; automated prettiness
 ;;god                        ; run Emacs commands without modifier keys
-;;lispy                      ; vim for lisp, for people who don't like vim
+lispy                        ; vim for lisp, for people who don't like vim
 multiple-cursors             ; editing in many places at once
 ;;objed                      ; text object editing for the innocent
 ;;parinfer                   ; turn lisp into python, sort of
@@ -419,7 +423,7 @@ json                         ; At least it ain't XML
 ;;(ruby +rails)              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
 ;;(rust +lsp)                  ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
 ;;scala                      ; java, but good
-scheme                       ; a fully conniving family of lisps
+;; scheme                       ; a fully conniving family of lisps
 sh                           ; she sells {ba,z,fi}sh shells on the C xor
 ;;sml                        ; no, the /other/ ML
 ;;solidity                   ; do you need a blockchain? No.
@@ -463,6 +467,7 @@ I couldn't resist the Email and Feed modules.
 #+end_src
 
 *** Visual Settings
+
 **** Font Face
 
 'Fira Code' is nice, and 'Overpass' makes for a nice sans companion. We just need to
@@ -508,16 +513,18 @@ thus not worth noting in the modeline. So, let's conditionally hide it.
 (add-hook 'after-change-major-mode-hook #'doom-modeline-conditional-buffer-encoding)
 #+end_src
 
-All-the-icons uses a scale factor of 1.2 which causes some height issues on the modeline setting it to 1.0 fixes them.
+All-the-icons uses a scale factor of 1.2 which causes some height issues on the modeline setting it to 1.0 fixes them. The other fix is to increase the bar hight.
 
 #+begin_src emacs-lisp
-(setq all-the-icons-scale-factor 1.0)
+(setq all-the-icons-scale-factor 1.2
+      doom-modeline-height 30)
 #+end_src
 
 **** Miscellaneous
 
 Relative line numbers are fantastic for knowing how far away line numbers are,
 then =ESC 12 <UP>= gets you exactly where you think.
+
 #+begin_src emacs-lisp
 (setq display-line-numbers-type 'relative)
 #+end_src
@@ -569,7 +576,9 @@ Now that the dashboard is so convenient, I'll want to make it easier to get to.
 #+end_src
 
 ** Other things
+
 *** Editor interaction
+
 **** Mouse buttons
 
 #+begin_src emacs-lisp
@@ -826,6 +835,7 @@ something simple.
 #+end_src
 
 ** Helpers
+
 **** Snippets
 
 I often want to set =src-block= headers, and it's a pain to
@@ -1008,6 +1018,7 @@ Specify a ~:branch~ to install a package from a particular branch or tag.
 #+end_src
 
 ** Convenience
+
 *** Topsy (stiky scroll)
 
 #+begin_src emacs-lisp :tangle packages.el
@@ -1067,16 +1078,10 @@ let's change that, and do a few other similar tweaks while we're at it.
 #+attr_html: :class invertible :alt Whichkey triggered on an evil motion
 [[https://tecosaur.com/lfs/emacs-config/screenshots/whichkey-evil.png]]
 
-*** Hide comments
+*** Comments manipulation
 
 #+begin_src emacs-lisp :tangle packages.el
 (package! hide-comnt)
-#+end_src
-
-#+begin_src emacs-lisp
-(map! :leader
-      :desc "Toggle comments"
-      "c h" #'hide/show-comments-toggle)
 #+end_src
 
 ** Tools
@@ -1117,6 +1122,8 @@ CCLS requires xref
       ;;company-minimum-prefix-length 1
       lsp-lens-enable nil
       lsp-idle-delay 0.1)  ;; clangd is fast
+
+(setq-default lsp-headerline-breadcrumb-enable t)
 #+end_src
 
 **** Keybindings
@@ -1127,7 +1134,6 @@ CCLS requires xref
       "g D" #'xref-find-definitions-other-window)
 #+end_src
 
-
 **** Languages
 
 ***** C/C++
@@ -1137,7 +1143,6 @@ CCLS requires xref
   '(ccls-code-lens-face :inherit shadow :height 0.75))
 
 (add-hook 'lsp-ccls-after-open-hook 'ccls-code-lens-mode)
-(add-hook 'lsp-after-initialize-hook 'lsp-headerline-breadcrumb-mode)
 #+end_src
 
 *** EVIL
@@ -1170,7 +1175,6 @@ the mode on startup, let's prevent installation of the package.
 #+end_src
 
 *** Org
-
 **** Fonts
 
 #+begin_src emacs-lisp
@@ -1183,8 +1187,7 @@ the mode on startup, let's prevent installation of the package.
                ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
                (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro.")))))
 
-      (custom-theme-set-faces
-       'user
+      (custom-set-faces
        `(org-level-8        ((t (:inherit outline-8 ,@variable-tuple))))
        `(org-level-7        ((t (:inherit outline-7 ,@variable-tuple))))
        `(org-level-6        ((t (:inherit outline-6 ,@variable-tuple))))
@@ -1203,7 +1206,7 @@ the mode on startup, let's prevent installation of the package.
 #+end_src
 
 #+begin_src emacs-lisp
-(setq org-ellipsis " "
+(setq org-ellipsis "  "
       org-modern-keyword nil
       org-modern-todo nil
       org-modern-statistics nil
@@ -1237,17 +1240,83 @@ the mode on startup, let's prevent installation of the package.
 #+end_src
 
 *** Shells
-**** Vterm
-
-#+begin_src emacs-lisp
-(setq vterm-shell "/usr/bin/env fish")
-#+end_src
-
 **** Eshell
 
+#+begin_src emacs-lisp :tangle packages.el
+(package! esh-autosuggest)
+#+end_src
+
 #+begin_src emacs-lisp
-(add-hook 'eshell-mode-hook (lambda () (company-mode -1)))
+(add-hook 'eshell-mode-hook (lambda ()
+                              (company-mode -1)
+                              (esh-autosuggest-mode 1)))
 
 (map! :map eshell-mode-map
       "<home>" #'eshell-bol) ;;Goes to the beginning of line, then skips past the prompt, if any.
+
+(set-eshell-alias! "ff" "find-file $1"
+                   "ffo" "find-file-other-window $1")
+#+end_src
+
+*** REPL
+**** Guile
+
+#+begin_src emacs-lisp :tangle packages.el
+;;(package! geiser :pin "d0a54c942839a561032b4bc41ca65ff4481bd073")
+;;(package! geiser-guile :pin "e540e14db538ed0d116a188569413f5aadd79180")
+;;(package! geiser-guile)
+;;(package! guix)
+#+end_src
+
+* Emacs Application Framework
+
+#+begin_src emacs-lisp :tangle no
+(use-package! eaf
+  :load-path "~/.elisp/emacs-application-framework"
+  :init
+  :custom
+  (eaf-browser-continue-where-left-off t)
+  (eaf-browser-enable-adblocker t)
+  (browse-url-browser-function 'eaf-open-browser) ;; Make EAF Browser my default browser
+  :config
+  (defalias 'browse-web #'eaf-open-browser)
+
+  (require 'eaf-file-manager)
+  (require 'eaf-music-player)
+  (require 'eaf-image-viewer)
+  (require 'eaf-camera)
+  (require 'eaf-demo)
+  (require 'eaf-airshare)
+  (require 'eaf-terminal)
+  (require 'eaf-markdown-previewer)
+  (require 'eaf-video-player)
+  (require 'eaf-vue-demo)
+  (require 'eaf-file-sender)
+  (require 'eaf-pdf-viewer)
+  (require 'eaf-mindmap)
+  (require 'eaf-netease-cloud-music)
+  (require 'eaf-jupyter)
+  (require 'eaf-org-previewer)
+  (require 'eaf-system-monitor)
+  (require 'eaf-rss-reader)
+  (require 'eaf-file-browser)
+  (require 'eaf-browser)
+  (require 'eaf-org)
+  (require 'eaf-mail)
+  (require 'eaf-git)
+  (when (display-graphic-p)
+    (require 'eaf-all-the-icons))
+
+  (require 'eaf-evil)
+  (define-key key-translation-map (kbd "SPC")
+    (lambda (prompt)
+      (if (derived-mode-p 'eaf-mode)
+          (pcase eaf--buffer-app-name
+            ("browser" (if  (string= (eaf-call-sync "call_function" eaf--buffer-id "is_focus") "True")
+                           (kbd "SPC")
+                         (kbd eaf-evil-leader-key)))
+            ("pdf-viewer" (kbd eaf-evil-leader-key))
+            ("image-viewer" (kbd eaf-evil-leader-key))
+            (_  (kbd "SPC")))
+        (kbd "SPC")))))
 #+end_src

@@ -99,18 +99,24 @@ We could also do with adding the missing arrow-key variants of the window
 navigation/swapping commands.
 #+begin_src emacs-lisp
 (map! :map evil-window-map
-      "SPC" #'rotate-layout
-      "N" #'evil-window-vnew
+      "SPC"            #'rotate-layout
+      "N"              #'evil-window-vnew
       ;; Navigation
-      "<left>"     #'evil-window-left
-      "<down>"     #'evil-window-down
-      "<up>"       #'evil-window-up
-      "<right>"    #'evil-window-right
+      "<left>"         #'evil-window-left
+      "<down>"         #'evil-window-down
+      "<up>"           #'evil-window-up
+      "<right>"        #'evil-window-right
       ;; Swapping windows
       "C-<left>"       #'+evil/window-move-left
       "C-<down>"       #'+evil/window-move-down
       "C-<up>"         #'+evil/window-move-up
       "C-<right>"      #'+evil/window-move-right)
+
+(map! :map evil-normal-state-map
+      "C-+"            #'text-scale-increase
+      "C--"            #'text-scale-decrease
+      "<C-wheel-up>"   #'text-scale-increase
+      "<C-wheel-down>" #'text-scale-decrease)
 #+end_src
 
 **** Resize
@@ -151,7 +157,13 @@ just need to resort to =SPC b o= for now.
       "C-s" #'evil-window-left
       "C-d" #'evil-window-down
       "C-e" #'evil-window-up
-      "C-f" #'evil-window-right)
+      "C-f" #'evil-window-right
+
+	    "C-+" #'text-scale-increase
+      "C--" #'text-scale-decrease
+
+      "<C-wheel-up>" 'text-scale-increase
+      "<C-wheel-down>" 'text-scale-decrease)
 #+end_src
 
 ** Doom configuration

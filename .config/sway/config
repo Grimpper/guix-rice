@@ -1,4 +1,4 @@
-##           _____                    _____                    _____                _____
+##          _____                    _____                    _____                _____
 #          /\    \                  /\    \                  /\    \              |\    \
 #         /::\    \                /::\____\                /::\    \             |:\____\
 #        /::::\    \              /:::/    /               /::::\    \            |::|   |
@@ -238,8 +238,10 @@ default_border pixel 2
 default_floating_border pixel 2
 smart_borders on
 smart_gaps on
-gaps outer 5
-gaps inner 4
+
+# Includes outer ones
+gaps inner 5
+gaps outer 0
 
 font pango: Iosevka
 font pango: mononoki Nerd Font Mono

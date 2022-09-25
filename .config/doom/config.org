@@ -412,7 +412,7 @@ json                         ; At least it ain't XML
 ;;nix                        ; I hereby declare "nix geht mehr!"
 ;;ocaml                      ; an objective camel
 (org                         ; organize your plain life in plain text
- ;;+pretty                   ; make org beautiful
+ +pretty                   ; make org beautiful
  +dragndrop                  ; drag & drop files/images into org buffers
  ;;+hugo                     ; use Emacs for hugo blogging
  ;;+noter                    ; enhanced PDF notetaking
@@ -435,7 +435,7 @@ json                         ; At least it ain't XML
 ;;(ruby +rails)              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
 ;;(rust +lsp)                  ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
 ;;scala                      ; java, but good
-;; scheme                       ; a fully conniving family of lisps
+(scheme +guile)              ; a fully conniving family of lisps
 sh                           ; she sells {ba,z,fi}sh shells on the C xor
 ;;sml                        ; no, the /other/ ML
 ;;solidity                   ; do you need a blockchain? No.
@@ -1221,6 +1221,7 @@ the mode on startup, let's prevent installation of the package.
 (setq org-ellipsis "  "
       org-modern-keyword nil
       org-modern-todo nil
+      org-modern-list nil
       org-modern-statistics nil
       org-modern-block-name nil)
 
@@ -1271,13 +1272,12 @@ the mode on startup, let's prevent installation of the package.
 #+end_src
 
 *** REPL
-**** Guile
+**** TODO Guile
 
+Emacs needs to fetch first the libraries installed from the system insead of the installed through stright.el used in the scheme module. Altering the =load-path= should fix the load order. For now I can't alter the load-path to load first system packages, so I'm pinning the packages to a specific commit.
 #+begin_src emacs-lisp :tangle packages.el
-;;(package! geiser :pin "d0a54c942839a561032b4bc41ca65ff4481bd073")
-;;(package! geiser-guile :pin "e540e14db538ed0d116a188569413f5aadd79180")
-;;(package! geiser-guile)
-;;(package! guix)
+(package! geiser :pin "bc0dde310492de733f9ec528d7aeddd57093d05e")
+(package! geiser-guile :pin "c641fcc50b6b86ca95743122b5206cdcd475f96e")
 #+end_src
 
 * Emacs Application Framework

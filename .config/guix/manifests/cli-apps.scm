@@ -9,6 +9,7 @@
    "openssh"
    "ripgrep"
    "neofetch"
+   "curl"
 
    ;; Text editors
    "vim"

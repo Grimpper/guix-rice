@@ -1064,6 +1064,15 @@ sounds nice to me.
 (add-hook 'lsp-pyright-after-open-hook 'global-color-identifiers-mode)
 #+end_src
 
+*** Rainbow mode
+
+In rainbow mode, colors cannot be displayed propperly over the highlight of hl-line-mode. Therfore we disable it.
+#+begin_src emacs-lisp
+(add-hook 'rainbow-mode-hook (lambda () (if (bound-and-true-p rainbow-mode)
+                                            (hl-line-mode -1)
+                                          (hl-line-mode t))))
+#+end_src
+
 *** Which-key
 
 #+begin_quote

@@ -46,7 +46,7 @@ set $menu rofi -show drun
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
-output * bg $HOME/wallpapers/ultrawide/hyperbeast/human_face.jpg fill
+output * bg $HOME/wallpapers/ultrawide/ios-blue-background.jpg fill
 #
 # Example configuration:
 #

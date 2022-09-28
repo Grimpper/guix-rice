@@ -1,6 +1,7 @@
 #+title: Doom Emacs Configuration
 #+author: Grimpper
 #+setupfile: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+#+exclude_tags: noexport
 
 * Installation
 
@@ -43,7 +44,6 @@ It's useful to have some basic personal information
 Apparently this is used by ~GPG~, and all sorts of other things.
 
 ** Better defaults
-
 *** Simple settings
 
 Browsing the web and seeing [[https://github.com/angrybacon/dotemacs/blob/master/dotemacs.org#use-better-defaults][angrybacon/dotemacs]] and comparing with the values
@@ -167,7 +167,6 @@ just need to resort to =SPC b o= for now.
 #+end_src
 
 ** Doom configuration
-
 *** Modules
 :PROPERTIES:
 :header-args:emacs-lisp: :tangle no
@@ -479,7 +478,6 @@ I couldn't resist the Email and Feed modules.
 #+end_src
 
 *** Visual Settings
-
 **** Font Face
 
 'Fira Code' is nice, and 'Overpass' makes for a nice sans companion. We just need to
@@ -532,6 +530,12 @@ All-the-icons uses a scale factor of 1.2 which causes some height issues on the 
       doom-modeline-height 30)
 #+end_src
 
+Disable modeline on dashboard
+
+#+begin_src emacs-lisp
+(add-hook! 'doom-after-init-hook (hide-mode-line-mode 1))
+#+end_src
+
 **** Miscellaneous
 
 Relative line numbers are fantastic for knowing how far away line numbers are,
@@ -550,47 +554,8 @@ There are a few handy macros added by doom, namely
   you load packages with ~require~ or ~use-package~
 - ~map!~ for binding new keys
 
-*** Dashboard quick actions
-
-When using the dashboard, there are often a small number of actions I will take.
-As the dashboard is it's own major mode, there is no need to suffer the tyranny
-of unnecessary keystrokes --- we can simply bind common actions to a single key!
-
-#+begin_src emacs-lisp
-(defun +doom-dashboard-setup-modified-keymap ()
-  (setq +doom-dashboard-mode-map (make-sparse-keymap))
-  (map! :map +doom-dashboard-mode-map
-        :desc "Find file" :ne "f" #'find-file
-        :desc "Recent files" :ne "r" #'consult-recent-file
-        :desc "Config dir" :ne "C" #'doom/open-private-config
-        :desc "Open config.org" :ne "c" (cmd! (find-file (expand-file-name "config.org" doom-private-dir)))
-        :desc "Open dotfile" :ne "." (cmd! (doom-project-find-file "~/.config/"))
-        :desc "Notes (roam)" :ne "n" #'org-roam-node-find
-        :desc "Switch buffer" :ne "b" #'+vertico/switch-workspace-buffer
-        :desc "Switch buffers (all)" :ne "B" #'consult-buffer
-        :desc "IBuffer" :ne "i" #'ibuffer
-        :desc "Previous buffer" :ne "p" #'previous-buffer
-        :desc "Set theme" :ne "t" #'consult-theme
-        :desc "Quit" :ne "Q" #'save-buffers-kill-terminal
-        :desc "Show keybindings" :ne "h" (cmd! (which-key-show-keymap '+doom-dashboard-mode-map))))
-
-(add-transient-hook! #'+doom-dashboard-mode (+doom-dashboard-setup-modified-keymap))
-(add-transient-hook! #'+doom-dashboard-mode :append (+doom-dashboard-setup-modified-keymap))
-(add-hook! 'doom-init-ui-hook :append (+doom-dashboard-setup-modified-keymap))
-#+end_src
-
-Unfortunately the show keybindings help doesn't currently work as intended, but
-this is still quite nice overall.
-
-Now that the dashboard is so convenient, I'll want to make it easier to get to.
-#+begin_src emacs-lisp
-(map! :leader :desc "Dashboard" "d" #'+doom-dashboard/open)
-#+end_src
-
 ** Other things
-
 *** Editor interaction
-
 **** Mouse buttons
 
 #+begin_src emacs-lisp
@@ -598,256 +563,7 @@ Now that the dashboard is so convenient, I'll want to make it easier to get to.
       :n [mouse-9] #'better-jumper-jump-forward)
 #+end_src
 
-*** Splash screen
-
-Emacs can render an image as the splash screen, and [[https://github.com/MarioRicalde][@MarioRicalde]] came up with a
-cracker! He's also provided me with a nice Emacs-style /E/. I was using the
-blackhole image, but as I've stripped down the splash screen I've switched to
-just using the /E/.
-
-#+attr_latex: :width 0.2\linewidth
-#+attr_html: :style width:20% :alt Fancy Emacs "E"
-[[file:misc/splash-images/emacs-e.svg]]
-
-Now we just make it theme-appropriate, and resize with the frame.
-
-#+begin_src emacs-lisp
-(defvar fancy-splash-image-template
-  (expand-file-name "misc/splash-images/emacs-e-template.svg" doom-private-dir)
-  "Default template svg used for the splash image, with substitutions from ")
-
-(defvar fancy-splash-sizes
-  `((:height 300 :min-height 50 :padding (0 . 2))
-    (:height 250 :min-height 42 :padding (2 . 4))
-    (:height 200 :min-height 35 :padding (3 . 3))
-    (:height 150 :min-height 28 :padding (3 . 3))
-    (:height 100 :min-height 20 :padding (2 . 2))
-    (:height 75  :min-height 15 :padding (2 . 1))
-    (:height 50  :min-height 10 :padding (1 . 0))
-    (:height 1   :min-height 0  :padding (0 . 0)))
-  "list of plists with the following properties
-  :height the height of the image
-  :min-height minimum `frame-height' for image
-  :padding `+doom-dashboard-banner-padding' (top . bottom) to apply
-  :template non-default template file
-  :file file to use instead of template")
-
-(defvar fancy-splash-template-colours
-  '(("$colour1" . keywords) ("$colour2" . type) ("$colour3" . base5) ("$colour4" . base8))
-  "list of colour-replacement alists of the form (\"$placeholder\" . 'theme-colour) which applied the template")
-
-(unless (file-exists-p (expand-file-name "theme-splashes" doom-cache-dir))
-  (make-directory (expand-file-name "theme-splashes" doom-cache-dir) t))
-
-(defun fancy-splash-filename (theme-name height)
-  (expand-file-name (concat (file-name-as-directory "theme-splashes")
-                            theme-name
-                            "-" (number-to-string height) ".svg")
-                    doom-cache-dir))
-
-(defun fancy-splash-clear-cache ()
-  "Delete all cached fancy splash images"
-  (interactive)
-  (delete-directory (expand-file-name "theme-splashes" doom-cache-dir) t)
-  (message "Cache cleared!"))
-
-(defun fancy-splash-generate-image (template height)
-  "Read TEMPLATE and create an image if HEIGHT with colour substitutions as
-   described by `fancy-splash-template-colours' for the current theme"
-  (with-temp-buffer
-    (insert-file-contents template)
-    (re-search-forward "$height" nil t)
-    (replace-match (number-to-string height) nil nil)
-    (dolist (substitution fancy-splash-template-colours)
-      (goto-char (point-min))
-      (while (re-search-forward (car substitution) nil t)
-        (replace-match (doom-color (cdr substitution)) nil nil)))
-    (write-region nil nil
-                  (fancy-splash-filename (symbol-name doom-theme) height) nil nil)))
-
-(defun fancy-splash-generate-images ()
-  "Perform `fancy-splash-generate-image' in bulk"
-  (dolist (size fancy-splash-sizes)
-    (unless (plist-get size :file)
-      (fancy-splash-generate-image (or (plist-get size :template)
-                                       fancy-splash-image-template)
-                                   (plist-get size :height)))))
-
-(defun ensure-theme-splash-images-exist (&optional height)
-  (unless (file-exists-p (fancy-splash-filename
-                          (symbol-name doom-theme)
-                          (or height
-                              (plist-get (car fancy-splash-sizes) :height))))
-    (fancy-splash-generate-images)))
-
-(defun get-appropriate-splash ()
-  (let ((height (frame-height)))
-    (cl-some (lambda (size) (when (>= height (plist-get size :min-height)) size))
-             fancy-splash-sizes)))
-
-(setq fancy-splash-last-size nil)
-(setq fancy-splash-last-theme nil)
-(defun set-appropriate-splash (&rest _)
-  (let ((appropriate-image (get-appropriate-splash)))
-    (unless (and (equal appropriate-image fancy-splash-last-size)
-                 (equal doom-theme fancy-splash-last-theme)))
-    (unless (plist-get appropriate-image :file)
-      (ensure-theme-splash-images-exist (plist-get appropriate-image :height)))
-    (setq fancy-splash-image
-          (or (plist-get appropriate-image :file)
-              (fancy-splash-filename (symbol-name doom-theme) (plist-get appropriate-image :height))))
-    (setq +doom-dashboard-banner-padding (plist-get appropriate-image :padding))
-    (setq fancy-splash-last-size appropriate-image)
-    (setq fancy-splash-last-theme doom-theme)
-    (+doom-dashboard-reload)))
-
-(add-hook 'window-size-change-functions #'set-appropriate-splash)
-(add-hook 'doom-load-theme-hook #'set-appropriate-splash)
-#+end_src
-
-Now the only thing missing is a an extra interesting line, whether that be some
-corporate BS, an developer excuse, or a fun (useless) fact.
-
-The following is rather long, but it essentially
-+ fetches a phrase from an API
-+ inserts it into the dashboard (asynchronously)
-+ moves ~point~ to the phrase
-+ re-uses the last phrase for requests within a few seconds of it being fetched
-
-#+begin_src emacs-lisp
-(defvar splash-phrase-source-folder
-  (expand-file-name "misc/splash-phrases" doom-private-dir)
-  "A folder of text files with a fun phrase on each line.")
-
-(defvar splash-phrase-sources
-  (let* ((files (directory-files splash-phrase-source-folder nil "\\.txt\\'"))
-         (sets (delete-dups (mapcar
-                             (lambda (file)
-                               (replace-regexp-in-string "\\(?:-[0-9]+-\\w+\\)?\\.txt" "" file))
-                             files))))
-    (mapcar (lambda (sset)
-              (cons sset
-                    (delq nil (mapcar
-                               (lambda (file)
-                                 (when (string-match-p (regexp-quote sset) file)
-                                   file))
-                               files))))
-            sets))
-  "A list of cons giving the phrase set name, and a list of files which contain phrase components.")
-
-(defvar splash-phrase-set
-  (nth (random (length splash-phrase-sources)) (mapcar #'car splash-phrase-sources))
-  "The default phrase set. See `splash-phrase-sources'.")
-
-(defun splase-phrase-set-random-set ()
-  "Set a new random splash phrase set."
-  (interactive)
-  (setq splash-phrase-set
-        (nth (random (1- (length splash-phrase-sources)))
-             (cl-set-difference (mapcar #'car splash-phrase-sources) (list splash-phrase-set))))
-  (+doom-dashboard-reload t))
-
-(defvar splase-phrase--cache nil)
-
-(defun splash-phrase-get-from-file (file)
-  "Fetch a random line from FILE."
-  (let ((lines (or (cdr (assoc file splase-phrase--cache))
-                   (cdar (push (cons file
-                                     (with-temp-buffer
-                                       (insert-file-contents (expand-file-name file splash-phrase-source-folder))
-                                       (split-string (string-trim (buffer-string)) "\n")))
-                               splase-phrase--cache)))))
-    (nth (random (length lines)) lines)))
-
-(defun splash-phrase (&optional set)
-  "Construct a splash phrase from SET. See `splash-phrase-sources'."
-  (mapconcat
-   #'splash-phrase-get-from-file
-   (cdr (assoc (or set splash-phrase-set) splash-phrase-sources))
-   " "))
-
-(defun doom-dashboard-phrase ()
-  "Get a splash phrase, flow it over multiple lines as needed, and make fontify it."
-  (mapconcat
-   (lambda (line)
-     (+doom-dashboard--center
-      +doom-dashboard--width
-      (with-temp-buffer
-        (insert-text-button
-         line
-         'action
-         (lambda (_) (+doom-dashboard-reload t))
-         'face 'doom-dashboard-menu-title
-         'mouse-face 'doom-dashboard-menu-title
-         'help-echo "Random phrase"
-         'follow-link t)
-        (buffer-string))))
-   (split-string
-    (with-temp-buffer
-      (insert (splash-phrase))
-      (setq fill-column (min 70 (/ (* 2 (window-width)) 3)))
-      (fill-region (point-min) (point-max))
-      (buffer-string))
-    "\n")
-   "\n"))
-
-(defadvice! doom-dashboard-widget-loaded-with-phrase ()
-  :override #'doom-dashboard-widget-loaded
-  (setq line-spacing 0.2)
-  (insert
-   "\n\n"
-   (propertize
-    (+doom-dashboard--center
-     +doom-dashboard--width
-     (doom-display-benchmark-h 'return))
-    'face 'doom-dashboard-loaded)
-   "\n"
-   (doom-dashboard-phrase)
-   "\n"))
-#+end_src
-
-Lastly, the doom dashboard "useful commands" are no longer useful to me.
-So, we'll disable them and then for a particularly /clean/ look disable
-the modeline and ~hl-line-mode~, then also hide the cursor.
-
-#+begin_src emacs-lisp
-(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
-(add-hook! '+doom-dashboard-mode-hook (hide-mode-line-mode 1) (hl-line-mode -1))
-(setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor (list nil))
-#+end_src
-
-At the end, we have a minimal but rather nice splash screen.
-
-#+attr_html: :class invertible :alt The splash screen, just loaded.
-[[https://tecosaur.com/lfs/emacs-config/screenshots/splash-screen.png]]
-
-I haven't forgotten about the ASCII banner though! Once again we're going for
-something simple.
-
-#+begin_src emacs-lisp
-(defun doom-dashboard-draw-ascii-emacs-banner-fn ()
-  (let* ((banner
-          '(",---.,-.-.,---.,---.,---."
-            "|---'| | |,---||    `---."
-            "`---'` ' '`---^`---'`---'"))
-         (longest-line (apply #'max (mapcar #'length banner))))
-    (put-text-property
-     (point)
-     (dolist (line banner (point))
-       (insert (+doom-dashboard--center
-                +doom-dashboard--width
-                (concat
-                 line (make-string (max 0 (- longest-line (length line)))
-                                   32)))
-               "\n"))
-     'face 'doom-dashboard-banner)))
-
-(unless (display-graphic-p) ; for some reason this messes up the graphical splash screen atm
-  (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn))
-#+end_src
-
 ** Helpers
-
 **** Snippets
 
 I often want to set =src-block= headers, and it's a pain to
@@ -1030,7 +746,6 @@ Specify a ~:branch~ to install a package from a particular branch or tag.
 #+end_src
 
 ** Convenience
-
 *** Topsy (stiky scroll)
 
 #+begin_src emacs-lisp :tangle packages.el
@@ -1261,6 +976,17 @@ the mode on startup, let's prevent installation of the package.
 (add-hook 'org-mode-hook 'org-sticky-header-mode)
 #+end_src
 
+**** Appear
+
+#+begin_src emacs-lisp
+(setq org-appear-autolinks      t
+      org-appear-autoemphasis   t
+      org-appear-autoentities   t
+      org-appear-autokeywords   t
+      org-appear-autosubmarkers t
+      org-hide-emphasis-markers t)
+#+end_src
+
 *** Shells
 **** Eshell
 
@@ -1289,7 +1015,293 @@ Emacs needs to fetch first the libraries installed from the system insead of the
 (package! geiser-guile :pin "c641fcc50b6b86ca95743122b5206cdcd475f96e")
 #+end_src
 
-* Emacs Application Framework
+* HOLD :noexport:
+** Dashboard quick actions
+
+When using the dashboard, there are often a small number of actions I will take.
+As the dashboard is it's own major mode, there is no need to suffer the tyranny
+of unnecessary keystrokes --- we can simply bind common actions to a single key!
+
+#+begin_src emacs-lisp
+(defun +doom-dashboard-setup-modified-keymap ()
+  (setq +doom-dashboard-mode-map (make-sparse-keymap))
+  (map! :map +doom-dashboard-mode-map
+        :desc "Find file" :ne "f" #'find-file
+        :desc "Recent files" :ne "r" #'consult-recent-file
+        :desc "Config dir" :ne "C" #'doom/open-private-config
+        :desc "Open config.org" :ne "c" (cmd! (find-file (expand-file-name "config.org" doom-private-dir)))
+        :desc "Open dotfile" :ne "." (cmd! (doom-project-find-file "~/.config/"))
+        :desc "Notes (roam)" :ne "n" #'org-roam-node-find
+        :desc "Switch buffer" :ne "b" #'+vertico/switch-workspace-buffer
+        :desc "Switch buffers (all)" :ne "B" #'consult-buffer
+        :desc "IBuffer" :ne "i" #'ibuffer
+        :desc "Previous buffer" :ne "p" #'previous-buffer
+        :desc "Set theme" :ne "t" #'consult-theme
+        :desc "Quit" :ne "Q" #'save-buffers-kill-terminal
+        :desc "Show keybindings" :ne "h" (cmd! (which-key-show-keymap '+doom-dashboard-mode-map))))
+
+(add-transient-hook! #'+doom-dashboard-mode (+doom-dashboard-setup-modified-keymap))
+(add-transient-hook! #'+doom-dashboard-mode :append (+doom-dashboard-setup-modified-keymap))
+(add-hook! 'doom-init-ui-hook :append (+doom-dashboard-setup-modified-keymap))
+#+end_src
+
+Unfortunately the show keybindings help doesn't currently work as intended, but
+this is still quite nice overall.
+
+Now that the dashboard is so convenient, I'll want to make it easier to get to.
+#+begin_src emacs-lisp
+(map! :leader :desc "Dashboard" "d" #'+doom-dashboard/open)
+#+end_src
+
+** Splash screen
+
+Emacs can render an image as the splash screen, and [[https://github.com/MarioRicalde][@MarioRicalde]] came up with a
+cracker! He's also provided me with a nice Emacs-style /E/. I was using the
+blackhole image, but as I've stripped down the splash screen I've switched to
+just using the /E/.
+
+#+attr_latex: :width 0.2\linewidth
+#+attr_html: :style width:20% :alt Fancy Emacs "E"
+[[file:misc/splash-images/emacs-e.svg]]
+
+Now we just make it theme-appropriate, and resize with the frame.
+
+#+begin_src emacs-lisp :tangle no
+(defvar fancy-splash-image-template
+  (expand-file-name "misc/splash-images/emacs-e-template.svg" doom-private-dir)
+  "Default template svg used for the splash image, with substitutions from ")
+
+(defvar fancy-splash-sizes
+  `((:height 300 :min-height 50 :padding (0 . 2))
+    (:height 250 :min-height 42 :padding (2 . 4))
+    (:height 200 :min-height 35 :padding (3 . 3))
+    (:height 150 :min-height 28 :padding (3 . 3))
+    (:height 100 :min-height 20 :padding (2 . 2))
+    (:height 75  :min-height 15 :padding (2 . 1))
+    (:height 50  :min-height 10 :padding (1 . 0))
+    (:height 1   :min-height 0  :padding (0 . 0)))
+  "list of plists with the following properties
+  :height the height of the image
+  :min-height minimum `frame-height' for image
+  :padding `+doom-dashboard-banner-padding' (top . bottom) to apply
+  :template non-default template file
+  :file file to use instead of template")
+
+(defvar fancy-splash-template-colours
+  '(("$colour1" . keywords) ("$colour2" . type) ("$colour3" . base5) ("$colour4" . base8))
+  "list of colour-replacement alists of the form (\"$placeholder\" . 'theme-colour) which applied the template")
+
+(unless (file-exists-p (expand-file-name "theme-splashes" doom-cache-dir))
+  (make-directory (expand-file-name "theme-splashes" doom-cache-dir) t))
+
+(defun fancy-splash-filename (theme-name height)
+  (expand-file-name (concat (file-name-as-directory "theme-splashes")
+                            theme-name
+                            "-" (number-to-string height) ".svg")
+                    doom-cache-dir))
+
+(defun fancy-splash-clear-cache ()
+  "Delete all cached fancy splash images"
+  (interactive)
+  (delete-directory (expand-file-name "theme-splashes" doom-cache-dir) t)
+  (message "Cache cleared!"))
+
+(defun fancy-splash-generate-image (template height)
+  "Read TEMPLATE and create an image if HEIGHT with colour substitutions as
+   described by `fancy-splash-template-colours' for the current theme"
+  (with-temp-buffer
+    (insert-file-contents template)
+    (re-search-forward "$height" nil t)
+    (replace-match (number-to-string height) nil nil)
+    (dolist (substitution fancy-splash-template-colours)
+      (goto-char (point-min))
+      (while (re-search-forward (car substitution) nil t)
+        (replace-match (doom-color (cdr substitution)) nil nil)))
+    (write-region nil nil
+                  (fancy-splash-filename (symbol-name doom-theme) height) nil nil)))
+
+(defun fancy-splash-generate-images ()
+  "Perform `fancy-splash-generate-image' in bulk"
+  (dolist (size fancy-splash-sizes)
+    (unless (plist-get size :file)
+      (fancy-splash-generate-image (or (plist-get size :template)
+                                       fancy-splash-image-template)
+                                   (plist-get size :height)))))
+
+(defun ensure-theme-splash-images-exist (&optional height)
+  (unless (file-exists-p (fancy-splash-filename
+                          (symbol-name doom-theme)
+                          (or height
+                              (plist-get (car fancy-splash-sizes) :height))))
+    (fancy-splash-generate-images)))
+
+(defun get-appropriate-splash ()
+  (let ((height (frame-height)))
+    (cl-some (lambda (size) (when (>= height (plist-get size :min-height)) size))
+             fancy-splash-sizes)))
+
+(setq fancy-splash-last-size nil)
+(setq fancy-splash-last-theme nil)
+(defun set-appropriate-splash (&rest _)
+  (let ((appropriate-image (get-appropriate-splash)))
+    (unless (and (equal appropriate-image fancy-splash-last-size)
+                 (equal doom-theme fancy-splash-last-theme)))
+    (unless (plist-get appropriate-image :file)
+      (ensure-theme-splash-images-exist (plist-get appropriate-image :height)))
+    (setq fancy-splash-image
+          (or (plist-get appropriate-image :file)
+              (fancy-splash-filename (symbol-name doom-theme) (plist-get appropriate-image :height))))
+    (setq +doom-dashboard-banner-padding (plist-get appropriate-image :padding))
+    (setq fancy-splash-last-size appropriate-image)
+    (setq fancy-splash-last-theme doom-theme)
+    (+doom-dashboard-reload)))
+
+(add-hook 'window-size-change-functions #'set-appropriate-splash)
+(add-hook 'doom-load-theme-hook #'set-appropriate-splash)
+#+end_src
+
+Now the only thing missing is a an extra interesting line, whether that be some
+corporate BS, an developer excuse, or a fun (useless) fact.
+
+The following is rather long, but it essentially
++ fetches a phrase from an API
++ inserts it into the dashboard (asynchronously)
++ moves ~point~ to the phrase
++ re-uses the last phrase for requests within a few seconds of it being fetched
+
+#+begin_src emacs-lisp
+(defvar splash-phrase-source-folder
+  (expand-file-name "misc/splash-phrases" doom-private-dir)
+  "A folder of text files with a fun phrase on each line.")
+
+(defvar splash-phrase-sources
+  (let* ((files (directory-files splash-phrase-source-folder nil "\\.txt\\'"))
+         (sets (delete-dups (mapcar
+                             (lambda (file)
+                               (replace-regexp-in-string "\\(?:-[0-9]+-\\w+\\)?\\.txt" "" file))
+                             files))))
+    (mapcar (lambda (sset)
+              (cons sset
+                    (delq nil (mapcar
+                               (lambda (file)
+                                 (when (string-match-p (regexp-quote sset) file)
+                                   file))
+                               files))))
+            sets))
+  "A list of cons giving the phrase set name, and a list of files which contain phrase components.")
+
+(defvar splash-phrase-set
+  (nth (random (length splash-phrase-sources)) (mapcar #'car splash-phrase-sources))
+  "The default phrase set. See `splash-phrase-sources'.")
+
+(defun splase-phrase-set-random-set ()
+  "Set a new random splash phrase set."
+  (interactive)
+  (setq splash-phrase-set
+        (nth (random (1- (length splash-phrase-sources)))
+             (cl-set-difference (mapcar #'car splash-phrase-sources) (list splash-phrase-set))))
+  (+doom-dashboard-reload t))
+
+(defvar splase-phrase--cache nil)
+
+(defun splash-phrase-get-from-file (file)
+  "Fetch a random line from FILE."
+  (let ((lines (or (cdr (assoc file splase-phrase--cache))
+                   (cdar (push (cons file
+                                     (with-temp-buffer
+                                       (insert-file-contents (expand-file-name file splash-phrase-source-folder))
+                                       (split-string (string-trim (buffer-string)) "\n")))
+                               splase-phrase--cache)))))
+    (nth (random (length lines)) lines)))
+
+(defun splash-phrase (&optional set)
+  "Construct a splash phrase from SET. See `splash-phrase-sources'."
+  (mapconcat
+   #'splash-phrase-get-from-file
+   (cdr (assoc (or set splash-phrase-set) splash-phrase-sources))
+   " "))
+
+(defun doom-dashboard-phrase ()
+  "Get a splash phrase, flow it over multiple lines as needed, and make fontify it."
+  (mapconcat
+   (lambda (line)
+     (+doom-dashboard--center
+      +doom-dashboard--width
+      (with-temp-buffer
+        (insert-text-button
+         line
+         'action
+         (lambda (_) (+doom-dashboard-reload t))
+         'face 'doom-dashboard-menu-title
+         'mouse-face 'doom-dashboard-menu-title
+         'help-echo "Random phrase"
+         'follow-link t)
+        (buffer-string))))
+   (split-string
+    (with-temp-buffer
+      (insert (splash-phrase))
+      (setq fill-column (min 70 (/ (* 2 (window-width)) 3)))
+      (fill-region (point-min) (point-max))
+      (buffer-string))
+    "\n")
+   "\n"))
+
+(defadvice! doom-dashboard-widget-loaded-with-phrase ()
+  :override #'doom-dashboard-widget-loaded
+  (setq line-spacing 0.2)
+  (insert
+   "\n\n"
+   (propertize
+    (+doom-dashboard--center
+     +doom-dashboard--width
+     (doom-display-benchmark-h 'return))
+    'face 'doom-dashboard-loaded)
+   "\n"
+   (doom-dashboard-phrase)
+   "\n"))
+#+end_src
+
+Lastly, the doom dashboard "useful commands" are no longer useful to me.
+So, we'll disable them and then for a particularly /clean/ look disable
+the modeline and ~hl-line-mode~, then also hide the cursor.
+
+#+begin_src emacs-lisp
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-shortmenu)
+(add-hook! '+doom-dashboard-mode-hook (hide-mode-line-mode 1) (hl-line-mode -1))
+(setq-hook! '+doom-dashboard-mode-hook evil-normal-state-cursor (list nil))
+#+end_src
+
+At the end, we have a minimal but rather nice splash screen.
+
+#+attr_html: :class invertible :alt The splash screen, just loaded.
+[[https://tecosaur.com/lfs/emacs-config/screenshots/splash-screen.png]]
+
+I haven't forgotten about the ASCII banner though! Once again we're going for
+something simple.
+
+#+begin_src emacs-lisp :tangle no
+(defun doom-dashboard-draw-ascii-emacs-banner-fn ()
+  (let* ((banner
+          '(",---.,-.-.,---.,---.,---."
+            "|---'| | |,---||    `---."
+            "`---'` ' '`---^`---'`---'"))
+         (longest-line (apply #'max (mapcar #'length banner))))
+    (put-text-property
+     (point)
+     (dolist (line banner (point))
+       (insert (+doom-dashboard--center
+                +doom-dashboard--width
+                (concat
+                 line (make-string (max 0 (- longest-line (length line)))
+                                   32)))
+               "\n"))
+     'face 'doom-dashboard-banner)))
+
+(unless (display-graphic-p) ; for some reason this messes up the graphical splash screen atm
+  (setq +doom-dashboard-ascii-banner-fn #'doom-dashboard-draw-ascii-emacs-banner-fn))
+#+end_src
+
+** Emacs Application Framework
 
 #+begin_src emacs-lisp :tangle no
 (use-package! eaf

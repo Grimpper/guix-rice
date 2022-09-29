@@ -796,7 +796,8 @@ From the =:core packages= module.
 
 Let's make this popup a bit faster
 #+begin_src emacs-lisp
-(setq which-key-idle-delay 0.5) ;; I need the help, I really do
+(after! which-key
+  (setq which-key-popup-type 'minibuffer)) ;; Remove pop-up glitch
 #+end_src
 
 I also think that having =evil-= appear in so many popups is a bit too verbose,
@@ -1013,6 +1014,70 @@ Emacs needs to fetch first the libraries installed from the system insead of the
 #+begin_src emacs-lisp :tangle packages.el
 (package! geiser :pin "bc0dde310492de733f9ec528d7aeddd57093d05e")
 (package! geiser-guile :pin "c641fcc50b6b86ca95743122b5206cdcd475f96e")
+#+end_src
+
+* Guix
+** LOG
+
+#+begin_src emacs-lisp
+(setq max-lisp-eval-depth 30000)
+(setq max-specpdl-size 30000)
+
+(defun modify-files-with-dir (all-files dir lst)
+  ;;lst should be '()
+  ;;cons on the dir, but must later advance index by one
+  (if (null (cdr all-files))
+      (setq lst (cons  (cons dir (car all-files))   lst))
+    (progn
+      (setq lst (cons  (cons dir (car all-files))   lst))
+      (modify-files-with-dir (cdr all-files) dir lst ))))
+
+(defun collect-all-files (all-dirs all-files)
+  ;;all-dirs: /var/log/guix/drvs/ab, ...ac, ...ad
+  ;;all-files: '()
+  (if (null (cdr all-dirs))
+      (let* ((dir (car all-dirs))
+         (str-len (length dir))
+         (sub-dir (substring dir (- str-len 2) str-len))
+         (dir-files (directory-files-and-attributes dir nil nil t))
+         (dir-files-mod (modify-files-with-dir dir-files sub-dir '())))
+    (setq all-files (append  dir-files-mod all-files)))
+    (let* ((dir (car all-dirs))
+       (str-len (length dir))
+       (sub-dir (substring dir (- str-len 2) str-len))
+       (dir-files (directory-files-and-attributes dir nil nil t))
+       (dir-files-mod (modify-files-with-dir dir-files sub-dir '()))
+       (all-files (append  dir-files-mod   all-files)))
+      (collect-all-files (cdr all-dirs) all-files))))
+
+(defun guix-last-log( )
+  ;; Opens the most recent file under "prefix" which is /var/log/guix/drvs/ on Debian.
+  ;; Paste into init.el and activate with M-x looklog.
+  ;; https://stackoverflow.com/questions/30886282/emacs-lisp-how-can-i-get-the-newest-file-in-a-directory
+  ;; https://emacs.stackexchange.com/questions/29555/how-to-run-sudo-commands-using-shell-command
+  (interactive)
+  (let* ((prefix "/var/log/guix/drvs")
+         (all-dirs (directory-files prefix t "[A-Za-z0-9]" nil))
+         (lst '())
+         (all-files (collect-all-files all-dirs lst))
+         (newest-file-as-list   (seq-find
+                                 '(lambda (x) (not (nth 2 x))) ; non-directory
+                                 (sort all-files '(lambda (x y) (time-less-p (nth 6 y) (nth 6 x))))))
+         (newest-file-subdir (car newest-file-as-list))
+         (newest-file  (concat prefix "/" newest-file-subdir "/" (cadr newest-file-as-list)))
+         (newest-file-length (length newest-file))
+         (isbz2? (string= "bz2" (substring newest-file (- newest-file-length 3) newest-file-length )))
+         (default-directory "/sudo::")
+         (dummy (if isbz2? (shell-command (concat "bzip2 -d " newest-file))))
+         (file-to-display (if isbz2? (substring newest-file 0 -4) newest-file))
+         (buffer-name "logbuffer"))
+    (progn
+     (message file-to-display)
+     (switch-to-buffer (get-buffer-create buffer-name))
+     (erase-buffer)
+     (insert-file-contents file-to-display)
+     (goto-char (point-max))
+     (with-current-buffer buffer-name (guix-build-log-mode)))))
 #+end_src
 
 * HOLD :noexport:

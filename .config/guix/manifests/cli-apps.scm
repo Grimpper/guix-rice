@@ -10,6 +10,8 @@
    "ripgrep"
    "neofetch"
    "curl"
+   "ncurses"
+   "file"
 
    ;; Text editors
    "vim"

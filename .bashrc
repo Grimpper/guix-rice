@@ -35,4 +35,10 @@ alias pollute='source $HOME/.bin/pollute.sh'
 bind '"\e[3;5~":kill-word'
 bind '"\C-h":backward-kill-word'
 
-# eval "$(starship init bash)"
+
+# Theming
+parse_git_branch() {
+     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ [\1]/'
+}
+
+PS1="\[\033[01;34m\]\w\[\033[01;35m\]\$(parse_git_branch) \[\033[00m\]\[\033[01;32m\]λ\[\033[00m\] "

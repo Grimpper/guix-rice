@@ -13,17 +13,17 @@ export PATH=$PATH:$HOME/.vnode/bin
 # [ ! -s ~/.config/mpd/pid ] && mpd
 
 # Load guix environment
-. $HOME/.guix-environment
+# . $HOME/.guix-environment
 
 # Load nix environment
-. /run/current-system/profile/etc/profile.d/nix.sh
+# . /run/current-system/profile/etc/profile.d/nix.sh
 
 # Make Flatpak & Nix apps visible to launcher
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
 
 # Load installed profiles
-. $HOME/.bin/pollute.sh
+# . $HOME/.bin/pollute.sh
 
 export XCURSOR_PATH=$XCURSOR_PATH:$GUIX_EXTRA_PROFILES/desktop/desktop/share/icons
 
@@ -38,6 +38,6 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 # export XDG_SESSION_DESKTOP=sway
 
 # Start Shepherd to manage user daemons
-if [ -z "$(pgrep -u grim shepherd)" ]; then
-  shepherd
-fi
+# if [ -z "$(pgrep -u grim shepherd)" ]; then
+#   shepherd
+# fi

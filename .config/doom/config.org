@@ -873,13 +873,7 @@ Prefix the current candidate with ». From [[https://github.com/minad/vertico/wi
 
   ;; Optionally use TAB for cycling, default is `corfu-complete'.
   :bind (:map corfu-map
-              ("M-SPC" . corfu-insert-separator)
-              ("TAB"     . corfu-next)
-              ([tab]     . corfu-next)
-              ("S-TAB"   . corfu-previous)
-              ([backtab] . corfu-previous)
-              ("S-<return>" . corfu-insert)
-              ("RET"     . nil)) ;; leave my enter alone!
+              ("C-SPC" . corfu-insert-separator))
 
   :init
   (global-corfu-mode)
@@ -887,9 +881,51 @@ Prefix the current candidate with ». From [[https://github.com/minad/vertico/wi
   :config
   (add-hook 'eshell-mode-hook
             (lambda () (setq-local corfu-quit-at-boundary t
-                              corfu-quit-no-match t
-                              corfu-auto nil)
+                                   corfu-quit-no-match t
+                                   corfu-auto nil)
               (corfu-mode))))
+#+end_src
+
+**** Icons
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! kind-icon)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! kind-icon
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+#+end_src
+
+**** Doc
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! corfu-doc)
+#+end_src
+
+#+begin_src emacs-lisp
+(add-hook 'corfu-mode-hook #'corfu-doc-mode)
+#+end_src
+
+*** Orderless
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! orderless)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))))
 #+end_src
 
 *** LSP

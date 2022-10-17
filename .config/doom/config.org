@@ -253,9 +253,8 @@ I reckon enabling half the modules Doom provides should do it.
 
 #+name: doom-completion
 #+begin_src emacs-lisp
-;;corfu
-(company                     ; the ultimate code completion backend
- +childframe)                ; ... when your children are better than you
+;; (company                     ; the ultimate code completion backend
+;;  +childframe)                ; ... when your children are better than you
 ;;helm                       ; the *other* search engine for love and life
 ;;ido                        ; the other *other* search engine...
 ;; (ivy                      ; a search engine for love and life
@@ -281,7 +280,7 @@ modeline                     ; snazzy, Atom-inspired modeline, plus API
 ;;nav-flash                  ; blink the current line after jumping
 ;;neotree                    ; a project drawer, like NERDTree for vim
 ophints                      ; highlight the region an operation acts on
-(popup +defaults)            ; tame sudden yet inevitable temporary windows
+popup            ; tame sudden yet inevitable temporary windows
 ;;(tabs                      ; an tab bar for Emacs
 ;;  +centaur-tabs)           ; ... with prettier tabs
 (treemacs +lsp)                     ; a project drawer, like neotree but cooler
@@ -849,6 +848,48 @@ Prefix the current candidate with ». From [[https://github.com/minad/vertico/wi
                    (propertize "» " 'face 'vertico-current)
                  "  ")
                cand)))
+#+end_src
+
+*** Corfu
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! corfu
+  :recipe (:host github :repo "minad/corfu"
+           :files ("*.el" "extensions/*.el")))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! corfu
+  ;; Optional customizations
+  :custom
+  (corfu-cycle t)                  ; Allows cycling through candidates
+  (corfu-auto t)                   ; Enable auto completion
+  (corfu-auto-prefix 2)            ; Enable auto completion
+  (corfu-auto-delay 0.0)           ; Enable auto completion
+  (corfu-quit-at-boundary 'separator)
+  (corfu-echo-documentation 0.25)   ; Enable auto completion
+  (corfu-preview-current 'insert)   ; Do not preview current candidate
+  (corfu-preselect-first nil)
+
+  ;; Optionally use TAB for cycling, default is `corfu-complete'.
+  :bind (:map corfu-map
+              ("M-SPC" . corfu-insert-separator)
+              ("TAB"     . corfu-next)
+              ([tab]     . corfu-next)
+              ("S-TAB"   . corfu-previous)
+              ([backtab] . corfu-previous)
+              ("S-<return>" . corfu-insert)
+              ("RET"     . nil)) ;; leave my enter alone!
+
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  :config
+  (add-hook 'eshell-mode-hook
+            (lambda () (setq-local corfu-quit-at-boundary t
+                              corfu-quit-no-match t
+                              corfu-auto nil)
+              (corfu-mode))))
 #+end_src
 
 *** LSP

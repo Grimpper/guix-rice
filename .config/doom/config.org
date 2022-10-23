@@ -16,6 +16,8 @@ emacs --batch --eval "(progn (require 'org) (setq org-confirm-babel-evaluate nil
 
 # Install doom
 git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.emacs.d
+git checkout -b fixed 4c9df9bfc63d2c3a9e20e20deaa854072e379f47 # Newer commits break some functionallity from eglot and from the custom banner
+
 ~/.emacs.d/bin/doom install
 
 # Refresh config
@@ -57,14 +59,16 @@ the following:
  x-stretch-cursor t)                              ; Stretch cursor to the glyph width
 
 (setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
-      evil-want-fine-undo t                       ; By default while in insert all changes are one big blob. Be more granular
+      ;; evil-want-fine-undo nil                       ; By default while in insert all changes are one big blob. Be more granular
       auto-save-default t                         ; Nobody likes to loose work, I certainly don't
       truncate-string-ellipsis "…"                ; Unicode ellispis are nicer than "...", and also save /precious/ space
-      password-cache-expiry nil                   ; I can trust my computers ... can't I?
+      ;; password-cache-expiry nil                   ; I can trust my computers ... can't I?
       ;; scroll-preserve-screen-position 'always     ; Don't have `point' jump around
-      scroll-margin 2)                            ; It's nice to maintain a little margin
+      scroll-margin 2)
+                                        ; It's nice to maintain a little margin
 
-(display-time-mode 1)                             ; Enable time in the mode-line
+;; (display-time-mode 1)
+                                        ; Enable time in the mode-line
 
 (unless (string-match-p "^Power N/A" (battery))   ; On laptops...
   (display-battery-mode 1))                       ; it's nice to know how much power you have
@@ -313,7 +317,7 @@ snippets                     ; my elves. They type so I don't have to
 (dired +icons)               ; making dired pretty [functional]
 electric                     ; smarter, keyword-based electric-indent
 (ibuffer +icons)             ; interactive buffer management
-undo                         ; persistent, smarter undo for your inevitable mistakes
+(undo +tree)                         ; persistent, smarter undo for your inevitable mistakes
 vc                           ; version-control and Emacs, sitting in a tree
 #+end_src
 
@@ -431,7 +435,7 @@ nix                        ; I hereby declare "nix geht mehr!"
 ;;php                        ; perl's insecure younger brother
 ;;plantuml                   ; diagrams for confusing people more
 ;;purescript                 ; javascript, but functional
-(python +lsp +pyright)       ; beautiful is better than ugly
+(python +lsp)       ; beautiful is better than ugly
 ;;qt                         ; the 'cutest' gui framework ever
 ;;racket                     ; a DSL for DSLs
 ;;raku                       ; the artist formerly known as perl6
@@ -532,8 +536,8 @@ thus not worth noting in the modeline. So, let's conditionally hide it.
 All-the-icons uses a scale factor of 1.2 which causes some height issues on the modeline setting it to 1.0 fixes them. The other fix is to increase the bar hight.
 
 #+begin_src emacs-lisp
-(setq all-the-icons-scale-factor 1.2
-      doom-modeline-height 30)
+(setq all-the-icons-scale-factor 1.0
+      doom-modeline-height 25)
 #+end_src
 
 Disable modeline on dashboard
@@ -958,7 +962,6 @@ Prefix the current candidate with ». From [[https://github.com/minad/vertico/wi
 
 *** LSP
 
-CCLS requires xref
 #+begin_src emacs-lisp :tangle packages.el
 (package! color-identifiers-mode)
 #+end_src
@@ -996,7 +999,7 @@ CCLS requires xref
 (add-hook 'lsp-ccls-after-open-hook 'ccls-code-lens-mode)
 
 ;;  HACK working on NixOS if installing nixos.ccls
-;; (set-eglot-client! 'cc-mode '("ccls" "--init={\"index\": {\"threads\": 3}}"))
+(set-eglot-client! 'cc-mode '("ccls" "--init={\"index\": {\"threads\": 3}}"))
 #+end_src
 
 ****** Clangd
@@ -1244,7 +1247,7 @@ just using the /E/.
 
 Now we just make it theme-appropriate, and resize with the frame.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (defvar fancy-splash-image-template
   (expand-file-name "misc/splash-images/emacs-e-template.svg" doom-private-dir)
   "Default template svg used for the splash image, with substitutions from ")
@@ -1457,7 +1460,7 @@ At the end, we have a minimal but rather nice splash screen.
 I haven't forgotten about the ASCII banner though! Once again we're going for
 something simple.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (defun doom-dashboard-draw-ascii-emacs-banner-fn ()
   (let* ((banner
           '(",---.,-.-.,---.,---.,---."

@@ -8,10 +8,5 @@ export GUIX_PACKAGE_PATH=$HOME/guix-packages
 GUIX_PROFILE="$HOME/.guix-profile"
 . "$GUIX_PROFILE"/etc/profile
 
-# TESTING : load eaf profile
-GUIX_PROFILE="$HOME/dev/eaf_profile/eaf_profile"
-. "$GUIX_PROFILE"/etc/profile
-# TESTING
-
 # Load installed profiles
 . $HOME/.bin/pollute.sh

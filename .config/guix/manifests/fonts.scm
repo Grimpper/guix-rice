@@ -18,8 +18,10 @@
    "font-overpass"
    "font-juliamono"
    "font-ibm-plex"
+   "font-google-noto"
 
    ;; Custom packages
    "font-nerd-fonts"
    "font-et-book"
+   "font-iosevka-comfy"
    "font-powerline")) ;; Asian characters

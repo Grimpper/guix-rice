@@ -22,15 +22,6 @@
         (base32
          "1la79y16k9rwcl2zsxk73c0kgdms2ma43kpjfqnq5jlbfdj0niwg"))))
     (build-system font-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'make-files-writable
-           (lambda _
-             (for-each
-              make-file-writable
-              (find-files "." ".*\\.(otf|otc|ttf|ttc)$"))
-             #t)))))
     (home-page "https://www.nerdfonts.com/")
     (synopsis "Iconic font aggregator, collection, and patcher")
     (description
@@ -55,15 +46,6 @@ and others.")
         (base32
          "0ya14lgx5mgpjbnw6sss3a2c99n6cw6xryd0xj8rbjwbr2gmrf1q"))))
     (build-system font-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'make-files-writable
-           (lambda _
-             (for-each
-              make-file-writable
-              (find-files "." ".*\\.(otf|otc|ttf|ttc)$"))
-             #t)))))
     (home-page "https://fontawesome.com")
     (synopsis "The iconic SVG, font, and CSS toolkit")
     (description
@@ -72,40 +54,6 @@ built from scratch. On top of this, features like icon font ligatures,
 an SVG framework, official NPM packages for popular frontend libraries
 like React, and access to a new CDN.")
     (license #f)))
-
-(define-public lcdf-typetools
-  (package
-    (name "lcdf-typetools")
-    (version "2.108")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/kohler/lcdf-typetools")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0a6jqaqwq43ldjjjlnsh6mczs2la9363qav7v9fyrfzkfj8kw9ad"))))
-    (inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list
-        (string-append
-         "--with-kpathsea="
-         (assoc-ref %build-inputs "texlive-bin")))))
-    (home-page "http://www.lcdf.org/type/")
-    (synopsis
-     "Utilities for manipulating various fonts")
-    (description
-     "LCDF Typetools comprises several programs for manipulating
-PostScript Type 1, Type 1 Multiple Master, OpenType, and TrueType
-fonts.")
-    (license license:gpl2+)))
 
 (define-public font-et-book
   (package
@@ -122,15 +70,6 @@ fonts.")
       (base32
        "1bhpk1fbp8jdhzc5j8y5v3bpnzy2sz3dpgjgzclb0dnm51hqqrpn"))))
     (build-system font-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'make-files-writable
-           (lambda _
-             (for-each
-              make-file-writable
-              (find-files "." ".*\\.(otf|otc|ttf|ttc)$"))
-             #t)))))
     (home-page "https://edwardtufte.github.io/et-book/")
     (synopsis "ET Book fonts")
     (description
@@ -152,16 +91,27 @@ fonts.")
       (base32
        "0n8yhc8y1vpiyza58d4fj5lyf03ncymrxc81a31crlbzlqvwwrqq"))))
     (build-system font-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'install 'make-files-writable
-           (lambda _
-             (for-each
-              make-file-writable
-              (find-files "." ".*\\.(otf|otc|ttf|ttc)$"))
-             #t)))))
     (home-page "https://powerline.readthedocs.io/en/latest/installation/linux.html#fonts-installation")
     (synopsis "Powerline fonts")
     (description "Patched fonts for Powerline users.")
     (license license:expat)))
+
+(define-public font-iosevka-comfy
+  (package
+   (name "font-iosevka-comfy")
+   (version "1.1.0")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/protesilaos/iosevka-comfy")
+           (commit version)))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32
+       "1h72my1s9pvxww6yijrvhy7hj9dspnshya60i60p1wlzr6d18v3p"))))
+    (build-system font-build-system)
+    (home-page "https://protesilaos.com/codelog/2022-10-19-iosevka-comfy-1-1-0/")
+    (synopsis "Custom version of Iosevky by Protesilaos Stavrou")
+    (description "Iosevka Comfy is a customised build of the Iosevka typeface, with a consistent rounded style and overrides for almost all individual glyphs in both roman (upright) and italic (slanted) variants.")
+    (license license:silofl1.1)))

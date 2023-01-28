@@ -30,7 +30,12 @@
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
-                (keyboard-layout %base-operating-system-keyboard)))
+                (keyboard-layout %base-operating-system-keyboard)
+                (menu-entries (list
+                               (menu-entry (label "Pop_OS!")
+                                           (linux "/boot/vmlinuz")
+                                           (linux-arguments '("root=/dev/nvme0n1p5"))
+                                           (initrd "/boot/initrd.img"))))))
   (swap-devices (list (swap-space
                         (target (uuid
                                  "0a1981a1-22a8-4fcf-8423-f0e6ef4e25c0")))))

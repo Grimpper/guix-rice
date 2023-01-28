@@ -9,8 +9,10 @@
 (operating-system
   (inherit base-operating-system)
   (kernel linux-lts)
-  (kernel-arguments (cons* "resume=/dev/nvme0n1p3"
-                           %default-kernel-arguments))
+  (kernel-arguments
+   (cons* "resume=/swapfile"
+          "resume_offset=92514304"
+          %default-kernel-arguments))
   (firmware (list linux-firmware))
   (host-name "grim-guix")
   (users (cons* (user-account
@@ -38,9 +40,6 @@
                                           (linux "/boot/vmlinuz")
                                           (linux-arguments '("root=/dev/nvme0n1p5"))
                                           (initrd "/boot/initrd.img"))))))
-  (swap-devices (list (swap-space
-                       (target (uuid
-                                "0a1981a1-22a8-4fcf-8423-f0e6ef4e25c0")))))
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained
   ;; by running 'blkid' in a terminal.
@@ -60,4 +59,14 @@
                          (device (uuid
                                   "bbce9d07-1ea6-4073-abdf-63cb029fe082"
                                   'ext4))
-                         (type "ext4")) %base-file-systems)))
+                         (type "ext4")) %base-file-systems))
+  ;; The swap file need to be created manually?
+  ;; $ sudo dd if=/dev/zero of=/swapfile bs=1024 count=16777216
+  ;; $ sudo chmod 0600 /swapfile
+  ;; $ sudo mkswap /swapfile
+  (swap-devices
+   (list
+    (swap-space
+     (target "/swapfile")
+     (dependencies (filter (file-system-mount-point-predicate "/")
+                           file-systems))))))

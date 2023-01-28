@@ -1,10 +1,15 @@
 (define-module (grimpper)
+  #:use-module (gnu)
   #:use-module (base-system)
-  #:use-module (gnu))
+  #:use-module (nongnu packages linux))
+
+(use-service-modules linux
+                     nix)
 
 (operating-system
  (inherit base-operating-system)
- (keyboard-layout (keyboard-layout "us" "altgr-intl"))
+ (kernel linux-lts)
+ (firmware (list linux-firmware))
  (host-name "grim-guix")
  (users (cons* (user-account
                 (name "grim")
@@ -19,11 +24,13 @@
       (list (specification->package "sway")
             (specification->package "nss-certs")
             (specification->package "nix"))
-          %base-packages))
+      %base-packages))
+  (services (append (list (service nix-service-type))
+                    %base-operating-system-services))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/boot/efi"))
-                (keyboard-layout keyboard-layout)))
+                (keyboard-layout %base-operating-system-keyboard)))
   (swap-devices (list (swap-space
                         (target (uuid
                                  "0a1981a1-22a8-4fcf-8423-f0e6ef4e25c0")))))

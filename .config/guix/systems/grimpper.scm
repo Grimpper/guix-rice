@@ -4,7 +4,8 @@
 
 (operating-system
  (inherit base-operating-system)
- (host-name "grim")
+ (keyboard-layout (keyboard-layout "us" "altgr-intl"))
+ (host-name "grim-guix")
  (users (cons* (user-account
                 (name "grim")
                 (comment "Grimpper")
@@ -13,21 +14,36 @@
                 (supplementary-groups
                  '("wheel" "netdev" "audio" "video")))
                %base-user-accounts))
- (file-systems
-    (cons* (file-system
-             (mount-point "/home")
-             (device
-               (uuid "9674545f-78dc-44c9-bd63-0da85ed699df"
-                     'ext4))
-             (type "ext4"))
-           (file-system
-             (mount-point "/")
-             (device
-               (uuid "2c12513d-e7ee-4fe8-80d2-e7399f8e437c"
-                     'ext4))
-             (type "ext4"))
-           (file-system
-             (mount-point "/boot/efi")
-             (device (uuid "ED98-F9EC" 'fat32))
-             (type "vfat"))
-           %base-file-systems)))
+  (packages
+    (append
+      (list (specification->package "sway")
+            (specification->package "nss-certs")
+            (specification->package "nix"))
+          %base-packages))
+  (bootloader (bootloader-configuration
+                (bootloader grub-efi-bootloader)
+                (targets (list "/boot/efi"))
+                (keyboard-layout keyboard-layout)))
+  (swap-devices (list (swap-space
+                        (target (uuid
+                                 "0a1981a1-22a8-4fcf-8423-f0e6ef4e25c0")))))
+  ;; The list of file systems that get "mounted".  The unique
+  ;; file system identifiers there ("UUIDs") can be obtained
+  ;; by running 'blkid' in a terminal.
+  (file-systems (cons* (file-system
+                         (mount-point "/boot/efi")
+                         (device (uuid "8D3A-9991"
+                                       'fat32))
+                         (type "vfat"))
+                       (file-system
+                         (mount-point "/")
+                         (device (uuid
+                                  "d74153e8-861e-49fd-847d-4b74a523e591"
+                                  'ext4))
+                         (type "ext4"))
+                       (file-system
+                         (mount-point "/home")
+                         (device (uuid
+                                  "bbce9d07-1ea6-4073-abdf-63cb029fe082"
+                                  'ext4))
+                         (type "ext4")) %base-file-systems)))

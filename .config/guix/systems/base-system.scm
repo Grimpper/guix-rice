@@ -1,11 +1,12 @@
 (define-module (base-system)
   #:use-module (gnu)
-  #:use-module (gnu services)
+  ;; #:use-module (gnu services)
   #:use-module (gnu services sddm)
-  #:use-module (gnu packages xorg)
-  #:use-module (nongnu packages linux)
+  ;; #:use-module (gnu packages xorg)
+  ;; #:use-module (nongnu packages linux)
   ;; #:use-module (nongnu packages nvidia)
-  #:use-module (guix transformations))
+  ;; #:use-module (guix transformations)
+  )
 
 (use-service-modules
  cups
@@ -13,10 +14,10 @@
  networking
  ssh
  xorg
- linux
+ ;; linux
  nix)
 
-(use-package-modules linux)
+;; (use-package-modules linux)
 
 ;; (define transform
 ;;   (options->transformation
@@ -24,15 +25,15 @@
 
 (define-public base-operating-system
  (operating-system
-  (kernel linux-lts)
+  ;; (kernel linux-lts)
   ;; (kernel-arguments (append
   ;;                    '("modprobe.blacklist=nouveau")
   ;;                    %default-kernel-arguments))
   ;; (kernel-loadable-modules (list nvidia-driver))
-  (firmware (list linux-firmware))
+  ;; (firmware (list linux-firmware))
   (locale "en_US.utf8")
   (timezone "Europe/Madrid")
-  (keyboard-layout (keyboard-layout "us" "intl"))
+  (keyboard-layout (keyboard-layout "us" "altgr-intl"))
   (host-name "dummypc")
   (users (cons* (user-account
                   (name "dummy")
@@ -42,13 +43,6 @@
                   (supplementary-groups
                     '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
-  (packages
-    (append
-      (list (specification->package "bspwm")
-            (specification->package "sway")
-            (specification->package "nss-certs")
-            (specification->package "nix"))
-          %base-packages))
   (services
    (cons* (service nix-service-type)
           (pam-limits-service

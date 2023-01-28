@@ -9,6 +9,8 @@
 (operating-system
  (inherit base-operating-system)
  (kernel linux-lts)
+ (kernel-arguments (cons* "resume=/dev/nvme0n1p3"
+                          %default-kernel-arguments))
  (firmware (list linux-firmware))
  (host-name "grim-guix")
  (users (cons* (user-account

@@ -20,34 +20,34 @@
                    (themes-directory "/opt/sddm")
                    (theme "sugar-candy")))
          (modify-services %desktop-services
-                          (delete gdm-service-type))))
+           (delete gdm-service-type))))
 
 (define-public base-operating-system
- (operating-system
-  (locale "en_US.utf8")
-  (timezone "Europe/Madrid")
-  (keyboard-layout %base-operating-system-keyboard)
-  (host-name "dummypc")
-  (users (cons* (user-account
-                  (name "dummy")
-                  (comment "Dummy")
-                  (group "users")
-                  (home-directory "/home/dummy")
-                  (supplementary-groups
+  (operating-system
+    (locale "en_US.utf8")
+    (timezone "Europe/Madrid")
+    (keyboard-layout %base-operating-system-keyboard)
+    (host-name "dummypc")
+    (users (cons* (user-account
+                   (name "dummy")
+                   (comment "Dummy")
+                   (group "users")
+                   (home-directory "/home/dummy")
+                   (supplementary-groups
                     '("wheel" "netdev" "audio" "video")))
-                %base-user-accounts))
-  (services base-operating-system-services)
-  (bootloader
-    (bootloader-configuration
+                  %base-user-accounts))
+    (services base-operating-system-services)
+    (bootloader
+     (bootloader-configuration
       (bootloader grub-efi-bootloader)
       (targets (list "/boot/efi"))
       (keyboard-layout %base-operating-system-keyboard)))
-  ;; Guix doesn't like it when there isn't a file-systems
-  ;; entry, so add one that is meant to be overridden
-  (file-systems (cons*
-                 (file-system
-                  (mount-point "/tmp")
-                  (device "none")
-                  (type "tmpfs")
-                  (check? #f))
-                 %base-file-systems))))
+    ;; Guix doesn't like it when there isn't a file-systems
+    ;; entry, so add one that is meant to be overridden
+    (file-systems (cons*
+                   (file-system
+                     (mount-point "/tmp")
+                     (device "none")
+                     (type "tmpfs")
+                     (check? #f))
+                   %base-file-systems))))

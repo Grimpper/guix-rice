@@ -7,40 +7,40 @@
                      nix)
 
 (operating-system
- (inherit base-operating-system)
- (kernel linux-lts)
- (kernel-arguments (cons* "resume=/dev/nvme0n1p3"
-                          %default-kernel-arguments))
- (firmware (list linux-firmware))
- (host-name "grim-guix")
- (users (cons* (user-account
-                (name "grim")
-                (comment "Grimpper")
-                (group "users")
-                (home-directory "/home/grim")
-                (supplementary-groups
-                 '("wheel" "netdev" "audio" "video")))
-               %base-user-accounts))
+  (inherit base-operating-system)
+  (kernel linux-lts)
+  (kernel-arguments (cons* "resume=/dev/nvme0n1p3"
+                           %default-kernel-arguments))
+  (firmware (list linux-firmware))
+  (host-name "grim-guix")
+  (users (cons* (user-account
+                 (name "grim")
+                 (comment "Grimpper")
+                 (group "users")
+                 (home-directory "/home/grim")
+                 (supplementary-groups
+                  '("wheel" "netdev" "audio" "video")))
+                %base-user-accounts))
   (packages
-    (append
-      (list (specification->package "sway")
-            (specification->package "nss-certs")
-            (specification->package "nix"))
-      %base-packages))
+   (append
+    (list (specification->package "sway")
+          (specification->package "nss-certs")
+          (specification->package "nix"))
+    %base-packages))
   (services (append (list (service nix-service-type))
                     %base-operating-system-services))
   (bootloader (bootloader-configuration
-                (bootloader grub-efi-bootloader)
-                (targets (list "/boot/efi"))
-                (keyboard-layout %base-operating-system-keyboard)
-                (menu-entries (list
-                               (menu-entry (label "Pop_OS!")
-                                           (linux "/boot/vmlinuz")
-                                           (linux-arguments '("root=/dev/nvme0n1p5"))
-                                           (initrd "/boot/initrd.img"))))))
+               (bootloader grub-efi-bootloader)
+               (targets (list "/boot/efi"))
+               (keyboard-layout %base-operating-system-keyboard)
+               (menu-entries (list
+                              (menu-entry (label "Pop_OS!")
+                                          (linux "/boot/vmlinuz")
+                                          (linux-arguments '("root=/dev/nvme0n1p5"))
+                                          (initrd "/boot/initrd.img"))))))
   (swap-devices (list (swap-space
-                        (target (uuid
-                                 "0a1981a1-22a8-4fcf-8423-f0e6ef4e25c0")))))
+                       (target (uuid
+                                "0a1981a1-22a8-4fcf-8423-f0e6ef4e25c0")))))
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained
   ;; by running 'blkid' in a terminal.

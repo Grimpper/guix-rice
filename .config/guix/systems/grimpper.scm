@@ -1,5 +1,6 @@
 (define-module (grimpper)
   #:use-module (gnu)
+  #:use-module (gnu artwork)
   #:use-module (base-system)
   #:use-module (nongnu packages linux))
 
@@ -35,10 +36,15 @@
                (bootloader grub-efi-bootloader)
                (targets (list "/boot/efi"))
                (keyboard-layout %base-operating-system-keyboard)
+               (theme (grub-theme
+                       (gfxmode '("2560x1080x32" "auto"))
+                       (image (file-append
+                               %artwork-repository
+                               "/grub/GuixSD-16-9.svg"))))
                (menu-entries (list
-                              (menu-entry (label "Pop_OS!")
+                              (menu-entry (label "Ubuntu")
                                           (linux "/boot/vmlinuz")
-                                          (linux-arguments '("root=/dev/nvme0n1p5"))
+                                          (linux-arguments '("root=/dev/nvme1n1p1"))
                                           (initrd "/boot/initrd.img"))))))
   ;; The list of file systems that get "mounted".  The unique
   ;; file system identifiers there ("UUIDs") can be obtained
@@ -59,7 +65,14 @@
                          (device (uuid
                                   "bbce9d07-1ea6-4073-abdf-63cb029fe082"
                                   'ext4))
-                         (type "ext4")) %base-file-systems))
+                         (type "ext4"))
+                       (file-system
+                         (mount-point "/shared")
+                         (device (uuid
+                                  "01ddf90b-1a82-4d9d-8493-32d39748991e"
+                                  'ext4))
+                         (type "ext4"))
+                       %base-file-systems))
   ;; The swap file need to be created manually?
   ;; $ sudo dd if=/dev/zero of=/swapfile bs=1024 count=16777216
   ;; $ sudo chmod 0600 /swapfile

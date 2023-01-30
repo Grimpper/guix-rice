@@ -19,7 +19,12 @@ export PATH=$PATH:$HOME/.vnode/bin
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
 
+# Add cursor install location
 export XCURSOR_PATH=$XCURSOR_PATH:$GUIX_EXTRA_PROFILES/desktop/desktop/share/icons
+
+# GTK theme
+export GTK_THEME=Arc-Dark
+export GTK2_RC_FILES=$GUIX_EXTRA_PROFILES/desktop/desktop/share/themes/$GTK_THEME/gtk-2.0/gtkrc
 
 # Make Java applications aware this is a non-reparenting window manager
 export _JAVA_AWT_WM_NONREPARENTING=1

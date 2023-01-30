@@ -5,6 +5,7 @@
    "pavucontrol"
    "fontconfig"
    "adwaita-icon-theme"
+   "arc-theme"
 
    ;; Usful apps for desktop bar widgets
    "cava"

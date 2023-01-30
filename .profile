@@ -26,14 +26,15 @@ export XCURSOR_PATH=$XCURSOR_PATH:$GUIX_EXTRA_PROFILES/desktop/desktop/share/ico
 export GTK_THEME=Arc-Dark
 export GTK2_RC_FILES=$GUIX_EXTRA_PROFILES/desktop/desktop/share/themes/$GTK_THEME/gtk-2.0/gtkrc
 
-# Make Java applications aware this is a non-reparenting window manager
-export _JAVA_AWT_WM_NONREPARENTING=1
-
-# Make sure that this only runs on wayland
-export SDL_VIDEODRIVER=wayland
-export QT_QPA_PLATFORM=wayland
-export XDG_CURRENT_DESKTOP=sway
-export XDG_SESSION_DESKTOP=sway
+# On sway set
+if [[ $DESKTOP_SESSION =~ .*/sway$ ]]; then
+    # Make Java applications aware this is a non-reparenting window manager
+    export _JAVA_AWT_WM_NONREPARENTING=1
+    export SDL_VIDEODRIVER=wayland
+    export QT_QPA_PLATFORM=wayland
+    export XDG_CURRENT_DESKTOP=sway
+    export XDG_SESSION_DESKTOP=sway
+fi
 
 # Start Shepherd to manage user daemons
 if [ -z "$(pgrep -u grim shepherd)" ]; then

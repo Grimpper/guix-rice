@@ -32,6 +32,7 @@ alias ll='ls -l'
 alias grep='grep --color=auto'
 alias pollute='source $HOME/.bin/pollute.sh'
 
-bind '"\e[3;5~":kill-word'
-bind '"\C-h":backward-kill-word'
-
+if [ -z "$INSIDE_EMACS" ]; then
+    bind '"\e[3;5~":kill-word'
+    bind '"\C-h":backward-kill-word'
+fi

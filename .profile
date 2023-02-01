@@ -37,7 +37,7 @@ if [[ $DESKTOP_SESSION =~ .*/sway$ ]]; then
 fi
 
 # Start Shepherd to manage user daemons
-if [ -z "$(pgrep -u grim shepherd)" ]; then
-  shepherd
+if [[ ! -S ${XDG_RUNTIME_DIR-$HOME/.cache}/shepherd/socket ]]; then
+    shepherd
 fi
 

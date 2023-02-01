@@ -6,4 +6,5 @@
 
    ;; Office
    "gimp"
+   "telegram-desktop"
    ))

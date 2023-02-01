@@ -8,6 +8,7 @@
    "emacs-vterm"
 
    ;; External dependencies
+   "python"
    "fish"
    "ripgrep"
    "git"

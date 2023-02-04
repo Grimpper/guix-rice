@@ -5,4 +5,3 @@
     #:stop (make-system-destructor "emacsclient --eval \"(kill-emacs)\"")))
 
 (register-services emacs-daemon)
-(start-in-the-background '(emacs-daemon))

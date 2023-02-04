@@ -26,6 +26,9 @@ export XCURSOR_PATH=$XCURSOR_PATH:$GUIX_EXTRA_PROFILES/desktop/desktop/share/ico
 export GTK_THEME=Arc-Dark
 export GTK2_RC_FILES=$GUIX_EXTRA_PROFILES/desktop/desktop/share/themes/$GTK_THEME/gtk-2.0/gtkrc
 
+# Dbus
+export DBUS_SESSION_BUS_ADDRESS="unix:path=/tmp/dbus-$UID"
+
 # On sway set
 if [[ $DESKTOP_SESSION =~ .*/sway$ ]]; then
     # Make Java applications aware this is a non-reparenting window manager

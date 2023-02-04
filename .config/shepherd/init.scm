@@ -12,16 +12,4 @@
 ;; Send shepherd into the background
 (action 'shepherd 'daemonize)
 
-;; (define dbus
-;;   (make-service
-;;     #:docstring "D-Bus Session Daemon"
-;;     #:provides '(dbus)
-;;     #:start (make-forkexec-constructor-with-env
-;;              (list "dbus-daemon" "--session" "--nofork"
-;;                    "--address" %dbus-address)
-;;              ;; Start dbus with $DISPLAY, as dbus may start services
-;;              ;; (e.g., notification daemon) that need this environment.
-;;              #:display available-display)
-;;     #:stop (make-kill-destructor)))
-
-;; (register-services dbus)
+(start-in-the-background '(dbus emacs-daemon))

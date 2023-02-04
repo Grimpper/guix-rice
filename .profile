@@ -16,7 +16,7 @@ export PATH=$PATH:$HOME/.vnode/bin
 . /run/current-system/profile/etc/profile.d/nix.sh
 
 # Make Flatpak & Nix apps visible to launcher
-export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share"
+export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share"
 export XDG_DATA_DIRS="$XDG_DATA_DIRS:$HOME/.nix-profile/share"
 
 # Add cursor install location

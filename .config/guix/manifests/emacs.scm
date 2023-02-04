@@ -9,6 +9,8 @@
 
    ;; External dependencies
    "python"
+   "dtach"
+   "direnv"
    "fish"
    "ripgrep"
    "git"

@@ -51,4 +51,3 @@ if [[ ! -S ${XDG_RUNTIME_DIR-$HOME/.cache}/shepherd/socket ]]; then
 
     shepherd
 fi
-

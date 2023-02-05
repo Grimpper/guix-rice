@@ -12,4 +12,5 @@
 ;; Send shepherd into the background
 (action 'shepherd 'daemonize)
 
-(start-in-the-background '(dbus emacs-daemon))
+;; Order is important. `gpg-agent' will export 'SSH_AUTH_SOCK' into the environment so Emacs can inherit it.
+(start-in-the-background '(dbus gpg-agent emacs-daemon))

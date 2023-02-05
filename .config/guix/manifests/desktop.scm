@@ -6,6 +6,7 @@
    "fontconfig"
    "adwaita-icon-theme"
    "arc-theme"
+   "pinentry"
 
    ;; Usful apps for desktop bar widgets
    "cava"

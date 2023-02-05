@@ -36,3 +36,6 @@ if [ -z "$INSIDE_EMACS" ]; then
     bind '"\e[3;5~":kill-word'
     bind '"\C-h":backward-kill-word'
 fi
+
+# Update tty for pinentry
+gpg-connect-agent updatestartuptty /bye >/dev/null

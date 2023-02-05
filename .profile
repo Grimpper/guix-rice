@@ -41,6 +41,14 @@ fi
 
 # Start Shepherd to manage user daemons
 if [[ ! -S ${XDG_RUNTIME_DIR-$HOME/.cache}/shepherd/socket ]]; then
+    # Export ssh variable after initializing the gpg ssh socket. This needs to be done here
+    # since doing it in Shepherd won't export it to this parent process.
+    export GPG_TTY=$(tty)
+    unset SSH_AGENT_PID
+    if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+        export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+    fi
+
     shepherd
 fi
 

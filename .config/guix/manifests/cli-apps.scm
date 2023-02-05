@@ -25,6 +25,10 @@
    "git"
    "stow"
 
+   ;; Keys
+   "pinentry" ;; This should only be needed for use outside emacs
+   "keychain"
+
    ;; Enable man pages for the profile
    "man-db"
    ))

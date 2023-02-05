@@ -37,5 +37,5 @@ if [ -z "$INSIDE_EMACS" ]; then
     bind '"\C-h":backward-kill-word'
 fi
 
-# Update tty for pinentry
-gpg-connect-agent updatestartuptty /bye >/dev/null
+# Use keychain to manage gpg-agent for each shell
+eval $(keychain --eval --quiet --noask id_ed25519)

@@ -12,6 +12,8 @@
    "curl"
    "ncurses"
    "file"
+   "make"
+   "qemu"
 
    ;; Text editors
    "vim"

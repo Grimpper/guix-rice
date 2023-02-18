@@ -2,7 +2,7 @@
  '(
    ;; Browsers
    "ungoogled-chromium"
-   ;;"firefox"
+   "icecat"
 
    ;; Office
    "gimp"

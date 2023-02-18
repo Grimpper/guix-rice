@@ -12,4 +12,4 @@
 ;; Send shepherd into the background
 (action 'shepherd 'daemonize)
 
-(start-in-the-background '(dbus gpg-agent emacs-daemon))
+(start-in-the-background '(dbus emacs-daemon gpg-agent))

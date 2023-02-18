@@ -39,3 +39,6 @@ fi
 
 # Use keychain to manage gpg-agent for each shell
 eval $(keychain --eval --quiet --noask id_ed25519)
+
+# Enable direnv
+eval "$(direnv hook bash)"

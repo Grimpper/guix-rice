@@ -10,17 +10,15 @@
   (keyboard-layout "us" "altgr-intl"))
 
 (define-public %base-operating-system-services
-  (cons* (pam-limits-service
-          (list
-           (pam-limits-entry "*" 'hard 'nofile 524288)))
-         (service sddm-service-type
-                  (sddm-configuration
-                   (display-server "wayland")
-                   (remember-last-user? #t)
-                   (themes-directory "/opt/sddm")
-                   (theme "sugar-candy")))
-         (modify-services %desktop-services
-           (delete gdm-service-type))))
+  (append (list (pam-limits-service
+                 (list
+                  (pam-limits-entry "*" 'hard 'nofile 524288)))
+                (service sddm-service-type
+                         (sddm-configuration
+                          (display-server "wayland")
+                          (remember-last-user? #t))))
+          (modify-services %desktop-services
+            (delete gdm-service-type))))
 
 (define-public base-operating-system
   (operating-system

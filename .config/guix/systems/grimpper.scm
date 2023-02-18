@@ -2,7 +2,8 @@
   #:use-module (gnu)
   #:use-module (gnu artwork)
   #:use-module (base-system)
-  #:use-module (nongnu packages linux))
+  #:use-module (nongnu packages linux)
+  #:use-module (gnu services sddm))
 
 (use-service-modules linux
                      nix)
@@ -28,10 +29,15 @@
    (append
     (list (specification->package "sway")
           (specification->package "nss-certs")
+          (specification->package "sddm-abstract") ;; Install sddm theme so its availeable on the default theme path '/run/current-system/profile/share/sddm/themes'
           (specification->package "nix"))
     %base-packages))
   (services (append (list (service nix-service-type))
-                    %base-operating-system-services))
+             (modify-services %base-operating-system-services
+               (sddm-service-type config =>
+                                  (sddm-configuration
+                                   (inherit config)
+                                   (theme "abstract"))))))
   (bootloader (bootloader-configuration
                (bootloader grub-efi-bootloader)
                (targets (list "/boot/efi"))

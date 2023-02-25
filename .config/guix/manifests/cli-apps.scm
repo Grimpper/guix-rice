@@ -31,6 +31,9 @@
    "pinentry" ;; This should only be needed for use outside emacs
    "keychain"
 
+   ;; NOTE: more info on https://guix.gnu.org/manual/en/html_node/Search-Paths.html
    ;; Enable man pages for the profile
    "man-db"
+   ;; Enable info pages for the profile
+   "info-reader"
    ))
